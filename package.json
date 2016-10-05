@@ -1,0 +1,29 @@
+{
+  "name": "tas_project",
+  "version": "1.0.0",
+  "description": "MEAN Appliacation on university needs.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://radwojt@bitbucket.org/poska1234/tas_project.git"
+  },
+  "keywords": [
+    "TAS",
+    "MEAN",
+    "Appliaction",
+    "NodeJS",
+    "AngularJS",
+    "UAM"
+  ],
+  "author": "Poska1234",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/poska1234/tas_project#readme",
+  "dependencies": {
+    "angular": "^1.5.8",
+    "express": "^4.14.0",
+    "mongoose": "^4.6.2"
+  }
+}
