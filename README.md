@@ -1,0 +1,1 @@
+Każdy pracuje na włąsnym Branch'u - jak nie to po łapach!!!
