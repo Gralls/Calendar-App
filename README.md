@@ -8,3 +8,5 @@ npm install
 
 
 ```
+
+Pamiętajcie by mieć pobrany i zainstalowany **NodeJS** oraz **MongoDB**
