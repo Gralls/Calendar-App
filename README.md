@@ -2,8 +2,9 @@
 
 
 ```
-#!npm install
+#!javascript
+
+npm install
 
 
 ```
- 
