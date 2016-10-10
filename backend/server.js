@@ -11,6 +11,7 @@ var mongoose   = require('mongoose');
 mongoose.connect('mongodb://tas_admin:tas123@ds021356.mlab.com:21356/tas-project');
 
 var Task = require('./models/task');
+var User = require('./models/user');
 
 var port = process.env.PORT || 8080;        // set our port
 var router = express.Router();              // get an instance of the express Router
@@ -22,6 +23,8 @@ router.use(function(req,res,next){
 	next();
 });
 
+//----------------------------------------------------------------------------------------
+
 router.route('/tasks')
 	.get(function(req,res){
 		Task.find(function(err,tasks){
@@ -32,7 +35,7 @@ router.route('/tasks')
 	})
 	.post(function(req,res){
 		var task = new Task();
-		task.name = req.body.name;
+		task.title = req.body.title;
 
 		task.save(function(err){
 			if(err)
@@ -62,7 +65,7 @@ router.route('/tasks/:task_id')
 		Task.findById(req.params.task_id,function(err,task){
 			if(err)
 				res.send(err);
-			task.name=req.body.name;
+			task.title=req.body.title;
 			task.save(function(err){
 				if(err)
 					res.send(err);
@@ -70,6 +73,8 @@ router.route('/tasks/:task_id')
 			});
 		});
 	});
+
+//--------------------------------------------------------------------------------------------
 	
 router.route('/meetings')
 	.get(function(req,res){
@@ -88,6 +93,59 @@ router.route('/meetings/:meeting_id')
 	})
 	.put(function(req,res){
 		res.json({message: 'Meeting with id: ' + req.params.meeting_id + ' updated'});
+	});
+	
+//---------------------------------------------------------------------------------------------
+
+router.route('/users')
+	.get(function(req,res){
+		User.find(function(err,tasks){
+			if(err)
+				res.send(err);
+			res.json(tasks);
+		});
+	})
+	.post(function(req,res){
+		var user = new User();
+		user.name = req.body.name;
+		user.login = req.body.login;
+		user.email = req.body.email;
+		user.password = req.body.password;
+		user.save(function(err){
+			if(err)
+				res.send(err);
+			res.json({message:'User created!'});
+		});
+	});
+
+router.route('/users/:user_id')
+	.get(function(req,res){
+		User.findById(req.params.user_id,function(err,task){
+			if(err)
+				res.send(err);
+			res.json(task);
+		});
+	})
+	.delete(function(req,res){
+		User.remove({
+			_id: req.params.user_id
+		}, function(err,task){
+			if(err)
+				res.send(err);
+			res.json({message: 'User succesfully deleted'});
+		});
+	})
+	.put(function(req,res){
+		User.findById(req.params.user_id,function(err,user){
+			if(err)
+				res.send(err);
+			
+			user.save(function(err){
+				if(err)
+					res.send(err);
+				res.json({message: 'User updated!'});
+			});
+		});
 	});
 // all of our routes will be prefixed with /api
 app.use('/api', router);
