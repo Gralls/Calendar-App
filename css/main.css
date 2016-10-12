@@ -1,0 +1,13 @@
+header {
+	display: block;
+	height: 100%;
+	width: 300px;
+	background-color: #67ce52;
+	position: fixed;
+	top: 0;
+	left: 0;
+}
+.main-nav {
+	text-decoration: none;
+	list-style-type: none;
+}
