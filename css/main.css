@@ -44,41 +44,55 @@ table {
 .text-center{
 	text-align: center;
 }
-header {
-	display: block;
+
+html, body {
+	width: 100%;
 	height: 100%;
+	outline: 0;
+	border: 0;
+	padding: 0;
+	margin: 0;
+}
+
+
+
+#mainContent{
+	width: 100%;
+	height: 100%;
+	position: relative;
+	display: block;
+	float: left;
+
+}
+
+#sidebarWrapper{
 	width: 15%;
-	background-color: #67ce52;
-	position: fixed;
-	top: 0;
-	left: 0;
+	height: 100%;
+	background: #bc0000;
+	float: left;
+	position: relative;
 }
-
-.login{
-	height: 100px;
-	background-color: #222222;
-	line-height: 100px;
-}
-
-.main-nav {
-	text-decoration: none;
-	list-style-type: none;
-	line-height: 3;
-}
-
-.main-nav li{
-	padding-left: 15px;
-}
-
-.main-nav li:hover{
-	background-color: #56bc41;
-}
-
-section{
-	position: absolute;
-	right: 0;
-	top: 0;
+#mainContainer{
 	width: 85%;
+	height: 100%;
+	float: left;
+	position: relative;
+	background: #000;
+	display: block;
+}
+
+.mainContainerTop{
 	height: 90%;
-	background-color: #555555;
+	width: 100%;
+	background: #fff;
+	float: left;
+	position: relative;
+}
+
+.footer{
+	height: 10%;
+	width: 100%;
+	background: #ccc;
+	float: left;
+	position: relative; 
 }
