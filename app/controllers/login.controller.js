@@ -7,6 +7,7 @@
  
     LoginController.$inject = ['$location', 'AuthenticationService', 'FlashService'];
     function LoginController($location, AuthenticationService, FlashService) {
+        //this refers to the function context(in this case it is controller)
         var vm = this;
  
         vm.login = login;
