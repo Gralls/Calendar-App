@@ -52,6 +52,7 @@ html, body {
 	border: 0;
 	padding: 0;
 	margin: 0;
+	font-family: 'Roboto', sans-serif;
 }
 
 
@@ -95,4 +96,35 @@ html, body {
 	background: #ccc;
 	float: left;
 	position: relative; 
+}
+
+.login{
+	padding-top: 30px;
+	padding-left: 15px;
+}
+
+.login input{
+	margin: 0 auto;
+	display: block;
+	border-radius: 10px;
+	text-align: center;
+	outline: none;
+	border: none;
+}
+
+.login input[type="button"]{
+	margin: 0 auto;
+	padding: 5px 10px;
+	display: block;
+}
+
+.main-menu {
+	list-style-type: none;
+	font-size: 18px;
+	text-align: center;
+}
+
+.main-menu li{
+	display: block;
+	margin: 30px 0 30px 0px;
 }
