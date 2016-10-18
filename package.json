@@ -23,8 +23,10 @@
   "homepage": "https://bitbucket.org/poska1234/tas_project#readme",
   "dependencies": {
     "angular": "^1.5.8",
+    "angular-cookies": "^1.5.8",
+    "angular-route": "^1.5.8",
+    "body-parser": "^1.0.1",
     "express": "^4.14.0",
-    "mongoose": "^4.6.2",
-    "body-parser": "^1.0.1"
+    "mongoose": "^4.6.2"
   }
 }
