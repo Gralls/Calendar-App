@@ -15,19 +15,19 @@
                 controllerAs: 'vm'
             })
  
-            .when('views/login', {
+            .when('views/', {
                 controller: 'LoginController',
-                templateUrl: 'views/login/login.view.html',
-                controllerAs: 'vm'
-            })
-
-            .when('views/register', {
-                controller: 'RegisterController',
                 templateUrl: 'views/login.view.html',
                 controllerAs: 'vm'
             })
+
+            .when('views/', {
+                controller: 'RegisterController',
+                templateUrl: 'views/register.view.html',
+                controllerAs: 'vm'
+            })
  
-            .otherwise({ redirectTo: '/views/login' });
+            .otherwise({ redirectTo: '/views' });
     }
  
     run.$inject = ['$rootScope', '$location', '$cookieStore', '$http'];
@@ -40,10 +40,10 @@
  
         $rootScope.$on('$locationChangeStart', function (event, next, current) {
             // redirect to login page if not logged in and trying to access a restricted page
-            var restrictedPage = $.inArray($location.path(), ['views/login']) === -1;
+            var restrictedPage = $.inArray($location.path(), ['/views']) === -1;
             var loggedIn = $rootScope.globals.currentUser;
             if (restrictedPage && !loggedIn) {
-                $location.path('views/login');
+                $location.path('/views');
             }
         });
     }
