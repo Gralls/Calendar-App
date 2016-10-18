@@ -16,7 +16,10 @@ var User = require('./models/user');
 var port = process.env.PORT || 8080;        // set our port
 var router = express.Router();              // get an instance of the express Router
 
-
+app.use('/', express.static(__dirname));
+app.get('/', function(req, res) {
+  res.sendFile(__dirname + '/public/index.html');
+});
 
 router.use(function(req,res,next){
 	console.log('Request');
