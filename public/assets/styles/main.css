@@ -41,9 +41,6 @@ table {
 	border-collapse: collapse;
 	border-spacing: 0;
 }
-.text-center{
-	text-align: center;
-}
 
 html, body {
 	width: 100%;
@@ -55,81 +52,43 @@ html, body {
 	font-family: 'Roboto', sans-serif;
 }
 
-
-
-#mainContent{
-	width: 100%;
+.sideNav{
+	width: 0;
 	height: 100%;
-	position: relative;
+	position: fixed;
+	transition: .5s;
+	top: 0;
+	left: 0;
+	z-index: 10;
+	padding-top: 50px;
+	background-color: #111;
+	overflow-x: hidden;
+}
+
+
+.sideNav a{
+	color: #818181;
 	display: block;
-	float: left;
-
+	padding: 10px 10px 10px 30px;
+	text-decoration: none;
+	font-size: 25px;
+	transition: .3s;
 }
 
-#sidebarWrapper{
-	width: 15%;
-	height: 100%;
-	background: #bc0000;
-	float: left;
-	position: relative;
-}
-#mainContainer{
-	width: 85%;
-	height: 100%;
-	float: left;
-	position: relative;
-	background: #000;
-	display: block;
+.closebtn{
+	position: absolute;
+	top: 0;
+	right: 25px;
+	font-size: 30px;
+	margin-left: 50px;
 }
 
-.mainContainerTop{
-	height: 90%;
-	width: 100%;
-	background: #fff;
-	float: left;
-	position: relative;
-}
-
-.footer{
-	height: 10%;
-	width: 100%;
-	background: #ccc;
-	float: left;
-	position: relative; 
-}
-
-.login{
-	padding-top: 30px;
-	padding-left: 15px;
-}
-
-.login input{
-	margin: 0 auto;
-	display: block;
-	border-radius: 10px;
-	text-align: center;
-	outline: none;
-	border: none;
-}
-
-.login input[type="button"]{
-	margin: 0 auto;
-	padding: 5px 10px;
-	display: block;
-}
-
-.main-menu {
-	list-style-type: none;
-	font-size: 18px;
-	text-align: center;
-}
-
-.main-menu li{
-	display: block;
-	margin: 30px 0 30px 0px;
+.mainContentWrapper{
+	transition: margin-left .5s;
+	padding: 16px;
 }
 /*
-LOGIN FORM*/
+LOGIN FORM
 
 .loginWrapper{
 	width: 100%;
