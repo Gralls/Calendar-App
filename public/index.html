@@ -14,28 +14,36 @@
 
     <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
 	<script src="../node_modules/angular/angular.min.js"></script>
-    <script src="../node_modules/angular-route/angular-route.min.js"></script>
-    <script src="../node_modules/angular-cookies/angular-cookies.min.js"></script>
 
-	<!--APP MAIN FILE-->
-  	<script src="../app/app.js"></script>
-
-	<!--APP SERVICES-->
-	<script src="../app/services/authentication.service.js"></script>	
-	<script src="../app/services/user.service.js"></script>	
-
-	<!--APP CONTROLLERS-->
-  	 <script src="../app/controllers/login.controller.js"></script>
 
 
 </head>
-<body ng-app='app'>
+<body>
 
 <!-- LOGIN POPUP -->
 
 <div class="loginWrapper">
-	<div ng-include src="'app/views/login.view.html'"></div>
+	<h1>Register User</h1>
+	
+	<div class="form-group">
+		<label for="loginInput">Login</label>
+		<input type="text" class="form-control" id="loginInput" placeholder="Login">
+	</div>
+	<div class="form-group">
+		<label for="passwordInput">Password</label>
+		<input type="password" class="form-control" id="passwordInput" placeholder="Password">
+	</div>
+	<div class="form-group">
+		<label for="displayInput">Display</label>
+		<input type="text" class="form-control" id="displayInput" placeholder="Display Name">
+	</div>
+	<div class="form-group">
+		<label for="emailInput">Email address</label>
+		<input type="email" class="form-control" id="emailInput" placeholder="Email">
+	</div>
 
+	<button type="button" id="sendUser">Register</button>
+	
 </div>
 
 <section id="mainContent">
