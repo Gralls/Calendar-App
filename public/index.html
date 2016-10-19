@@ -20,12 +20,11 @@
 
 
 </head>
-<<<<<<< HEAD
 <body ng-controller="RegisterController">
 
 <!-- LOGIN POPUP -->
 
-<div class="loginWrapper">
+<div class="loginWrapper" style="display: none">
 	<h1>Register User</h1>
 	
 	<div class="form-group">
@@ -48,8 +47,6 @@
 	<button type="button" ng-click="addUser();"id="sendUser">Register</button>
 	
 </div>
-=======
-<body>
 <section id="mainContent">
 	<div id="sidebarWrapper" class="sideNav">
 		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
@@ -58,43 +55,14 @@
 		<a href="#">Ipsum</a>
 	</div>
 
->>>>>>> acb168daac90a348ebf756c1085161e500c508bf
-
 	<div id="mainContainer" class="mainContentWrapper">
  			<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
- 			<div class="loginWrapper">
-			<h1>Register User</h1>
-			
-			<div class="form-group">
-				<label for="loginInput">Login</label>
-				<input type="text" class="form-control" id="loginInput" placeholder="Login">
-			</div>
-			<div class="form-group">
-				<label for="passwordInput">Password</label>
-				<input type="password" class="form-control" id="passwordInput" placeholder="Password">
-			</div>
-			<div class="form-group">
-				<label for="displayInput">Display</label>
-				<input type="text" class="form-control" id="displayInput" placeholder="Display Name">
-			</div>
-			<div class="form-group">
-				<label for="emailInput">Email address</label>
-				<input type="email" class="form-control" id="emailInput" placeholder="Email">
-			</div>
-
-			<button type="button" id="sendUser">Register</button>
-			
-			</div>
+ 		
 	</div>
 	
 </section>
 
-<!-- LOGIN POPUP -->
 
-<div class="loginWrapper">
-	<div ng-include src="'app/views/login.view.html'"></div>
-
-</div> 
 
 
 
