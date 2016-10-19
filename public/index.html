@@ -13,12 +13,14 @@
     <link rel="stylesheet" type="text/css" href="public/assets/styles/main.css">
 
     <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="public/assets/scripts/custom.js"></script>
 	<script src="../node_modules/angular/angular.min.js"></script>
 	<script src="../app/app.js"></script>
 
 
 
 </head>
+<<<<<<< HEAD
 <body ng-controller="RegisterController">
 
 <!-- LOGIN POPUP -->
@@ -46,25 +48,56 @@
 	<button type="button" ng-click="addUser();"id="sendUser">Register</button>
 	
 </div>
-
+=======
+<body>
 <section id="mainContent">
-	<div id="sidebarWrapper">
-		<ul class="main-menu">
-			<li class="showLoginForm">Login</li>
-			<li>Calendar</li>
-			<li>Events</li>
-		</ul>
+	<div id="sidebarWrapper" class="sideNav">
+		<a href="javascript:void(0)" class="closebtn" onclick="closeNav()">&times;</a>
+		<a href="#">Lorem</a>
+		<a href="#">Lorem</a>
+		<a href="#">Ipsum</a>
 	</div>
-	<div id="mainContainer">
-		<div class="mainContainerTop">
-		
-		</div>
-		<div class="footer">
-			<p>&copy</p>
-		</div>
+
+>>>>>>> acb168daac90a348ebf756c1085161e500c508bf
+
+	<div id="mainContainer" class="mainContentWrapper">
+ 			<span style="font-size:30px;cursor:pointer" onclick="openNav()">&#9776; open</span>
+ 			<div class="loginWrapper">
+			<h1>Register User</h1>
+			
+			<div class="form-group">
+				<label for="loginInput">Login</label>
+				<input type="text" class="form-control" id="loginInput" placeholder="Login">
+			</div>
+			<div class="form-group">
+				<label for="passwordInput">Password</label>
+				<input type="password" class="form-control" id="passwordInput" placeholder="Password">
+			</div>
+			<div class="form-group">
+				<label for="displayInput">Display</label>
+				<input type="text" class="form-control" id="displayInput" placeholder="Display Name">
+			</div>
+			<div class="form-group">
+				<label for="emailInput">Email address</label>
+				<input type="email" class="form-control" id="emailInput" placeholder="Email">
+			</div>
+
+			<button type="button" id="sendUser">Register</button>
+			
+			</div>
 	</div>
 	
 </section>
+
+<!-- LOGIN POPUP -->
+
+<div class="loginWrapper">
+	<div ng-include src="'app/views/login.view.html'"></div>
+
+</div> 
+
+
+
 
 	
 </body>
