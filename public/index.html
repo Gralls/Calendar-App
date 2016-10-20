@@ -20,11 +20,9 @@
 
 
 </head>
-<body ng-controller="RegisterController">
+<body>
 
-<!-- LOGIN POPUP -->
-
-<div class="loginWrapper" style="display: none">
+<div ng-controller="RegisterController" class="loginWrapper" style="display: none">
 	<h1>Register User</h1>
 	
 	<div class="form-group">
@@ -44,9 +42,25 @@
 		<input name="email" ng-model="email" type="text" class="form-control" id="emailInput" placeholder="Email">
 	</div>
 
-	<button type="button" ng-click="addUser();"id="sendUser">Register</button>
-	
+	<button type="button" ng-click="addUser();" id="sendUser">Register</button>
 </div>
+
+<!-- LOGIN POPUP -->
+
+<div ng-controller="LoginController" class="loginWrapper" style="display: none">
+	<h1>Login User</h1>
+	<div class="form-group">
+		<label for="LoginInput2">Username</label>
+		<input type="text" name="username" ng-model="username" class="form-control" id="LoginInput2" placeholder="Login">
+	</div>
+	<div class="form-group">
+		<label for="PasswordInput2">Password</label>
+		<input type="text" name="password" ng-model="password" class="form-control" id="PasswordInput2" placeholder="Password">
+	</div>
+
+	<button type="submit" ng-click="Login()">Sign in</button>
+</div>
+<div></div>
 <section id="mainContent">
 	<div id="sidebarWrapper" class="sideNav">
 		<a href="javascript:void(0)" class="closebtn sidebarToggleOff">&times;</a>
