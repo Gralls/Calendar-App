@@ -25,7 +25,37 @@ app.controller('RegisterController', function RegisterController($scope, $http){
 	
 });
 
+app.controller('LoginController', function LoginController($scope, $http){
+	// Set the default value of inputType
+	$scope.inputType = "password";
 
+	// Hide & show password function
+	$scope.hideShowPassword = function() {
+		if($scope.inputType = "password"){
+			$scope.inputType = "text";
+		} else {
+			$scope.inputType = "password"; 
+		}
+	}
+
+	$scope.Login = function() {
+		$http.get("/api/users")
+			.then(function onRequestCompleted(response) {
+        		$scope.dataUser = response.data;
+        		for(var i = 0; i < $scope.dataUser.length; i++) {
+        			if(($scope.login === $scope.dataUser[i].login) && ($scope.password === $scope.dataUser[i].password)){
+        				console.log("User found");
+        			} else {
+        				console.log("Wrong User");
+        			}
+        		}
+
+        	}, function onError(reason) {
+        		$scope.error = "Cant get data";
+    		});
+
+	}
+});
 
 
 })();

@@ -17,36 +17,57 @@
 	<script src="../node_modules/angular/angular.min.js"></script>
 	<script src="../app/app.js"></script>
 
-
-
 </head>
-<body ng-controller="RegisterController">
+<body>
+
+<div ng-controller="RegisterController" class="loginWrapper" style="display: none">
+	<h1>Register User</h1>
+	<form name="registerForm">
+		<div class="form-group" ng-class="{ 'has-error': registerForm.login.$dirty && registerForm.login.$error.required }">
+			<label for="loginInput">Login</label>
+			<input name="login" ng-model="login" type="text" class="form-control" id="loginInput" placeholder="Login" required>
+			<span ng-show="registerForm.login.$dirty && registerForm.login.$error.required" class="help-block">Login is required</span>
+		</div>
+		<div class="form-group" ng-class="{ 'has-error': registerForm.password.$dirty && registerForm.password.$error.required }">
+			<label for="passwordInput">Password</label>
+			<input name="password" ng-model="password" type="password" class="form-control" id="passwordInput" placeholder="Password" required>
+			<span ng-show="registerForm.password.$dirty && registerForm.password.$error.required" class="help-block">Password is required</span>
+		</div>
+		<div class="form-group" ng-class="{ 'has-error': registerForm.name.$dirty && registerForm.name.$error.required }">
+			<label for="displayInput">Display</label>
+			<input name="name" ng-model="name" type="text" class="form-control" id="displayInput" placeholder="Display Name" required>
+			<span ng-show="registerForm.name.$dirty && registerForm.name.$error.required" class="help-block">Name is required</span>
+		</div>
+		<div class="form-group" ng-class="{ 'has-error': registerForm.email.$dirty && registerForm.email.$error.required }">
+			<label for="emailInput">Email address</label>
+			<input name="email" ng-model="email" type="text" class="form-control" id="emailInput" placeholder="Email" required>
+			<span ng-show="registerForm.email.$dirty && registerForm.email.$error.required" class="help-block">Email is required</span>
+		</div>
+
+		<button type="button" ng-click="addUser();" id="sendUser" ng-disabled="registerForm.$invalid">Register</button>
+	</form>
+</div>
 
 <!-- LOGIN POPUP -->
 
-<div class="loginWrapper" style="display: none">
-	<h1>Register User</h1>
-	
-	<div class="form-group">
-		<label for="loginInput">Login</label>
-		<input name="login" ng-model="login" type="text" class="form-control" id="loginInput" placeholder="Login">
-	</div>
-	<div class="form-group">
-		<label for="passwordInput">Password</label>
-		<input name="password" ng-model="password" type="password" class="form-control" id="passwordInput" placeholder="Password">
-	</div>
-	<div class="form-group">
-		<label for="displayInput">Display</label>
-		<input name="name" ng-model="name" type="text" class="form-control" id="displayInput" placeholder="Display Name">
-	</div>
-	<div class="form-group">
-		<label for="emailInput">Email address</label>
-		<input name="email" ng-model="email" type="text" class="form-control" id="emailInput" placeholder="Email">
-	</div>
+<div ng-controller="LoginController" class="loginWrapper">
+	<h1>Login User</h1>
+	<form name="loginForm">
+		<div class="form-group" ng-class="{ 'has-error': loginForm.login.$dirty && loginForm.login.$error.required }">
+			<label for="LoginInput2">Login</label>
+			<input type="text" name="login" ng-model="login" class="form-control" placeholder="Login" required>
+			<span ng-show="loginForm.login.$dirty && loginForm.login.$error.required" class="">Login is required</span>
+		</div>
+		<div class="form-group" ng-class="{ 'has-error': loginForm.password.$dirty && loginForm.password.$error.required }">
+			<label for="PasswordInput2">Password</label>
+			<input type="{{inputType}}" name="password" ng-model="password" class="form-control" placeholder="Password" required>
+			<span ng-show="loginForm.password.$dirty && loginForm.password.$error.required" class="">Password is required</span>
+		</div>
 
-	<button type="button" ng-click="addUser();"id="sendUser">Register</button>
-	
+		<button type="submit" ng-click="Login()" ng-disabled="loginForm.$invalid">Login</button>
+	</form>
 </div>
+<div></div>
 <section id="mainContent">
 	<div id="sidebarWrapper" class="sideNav">
 		<a href="#">Lorem</a>
@@ -226,13 +247,6 @@
  		
 	</div>
 	
-</section>
-
-
-
-
-
-
-	
+</section>	
 </body>
 </html>
