@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 
-<html>
+<html ng-app="app">
 <head>
     <title>Technologie Aplikacji Serwerowych</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,50 +12,241 @@
     <link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="public/assets/styles/main.css">
 
+    <script src="//code.jquery.com/jquery-2.0.3.min.js"></script>
+    <script src="public/assets/scripts/custom.js"></script>
 	<script src="../node_modules/angular/angular.min.js"></script>
-    <script src="../node_modules/angular-route/angular-route.min.js"></script>
-    <script src="../node_modules/angular-cookies/angular-cookies.min.js"></script>
-
-	<!--APP MAIN FILE-->
-  	<script src="../app/app.js"></script>
-
-	<!--APP SERVICES-->
-	<script src="../app/services/authentication.service.js"></script>	
-	<script src="../app/services/user.service.js"></script>	
-
-	<!--APP CONTROLLERS-->
-  	 <script src="../app/controllers/login.controller.js"></script>
-
+	<script src="../app/app.js"></script>
 
 </head>
-<body ng-app='app'>
+<body>
+
+<div ng-controller="RegisterController" class="loginWrapper" style="display: none">
+	<h1>Register User</h1>
+	<form name="registerForm">
+		<div class="form-group" ng-class="{ 'has-error': registerForm.login.$dirty && registerForm.login.$error.required }">
+			<label for="loginInput">Login</label>
+			<input name="login" ng-model="login" type="text" class="form-control" id="loginInput" placeholder="Login" required>
+			<span ng-show="registerForm.login.$dirty && registerForm.login.$error.required" class="help-block">Login is required</span>
+		</div>
+		<div class="form-group" ng-class="{ 'has-error': registerForm.password.$dirty && registerForm.password.$error.required }">
+			<label for="passwordInput">Password</label>
+			<input name="password" ng-model="password" type="password" class="form-control" id="passwordInput" placeholder="Password" required>
+			<span ng-show="registerForm.password.$dirty && registerForm.password.$error.required" class="help-block">Password is required</span>
+		</div>
+		<div class="form-group" ng-class="{ 'has-error': registerForm.name.$dirty && registerForm.name.$error.required }">
+			<label for="displayInput">Display</label>
+			<input name="name" ng-model="name" type="text" class="form-control" id="displayInput" placeholder="Display Name" required>
+			<span ng-show="registerForm.name.$dirty && registerForm.name.$error.required" class="help-block">Name is required</span>
+		</div>
+		<div class="form-group" ng-class="{ 'has-error': registerForm.email.$dirty && registerForm.email.$error.required }">
+			<label for="emailInput">Email address</label>
+			<input name="email" ng-model="email" type="text" class="form-control" id="emailInput" placeholder="Email" required>
+			<span ng-show="registerForm.email.$dirty && registerForm.email.$error.required" class="help-block">Email is required</span>
+		</div>
+
+		<button type="button" ng-click="addUser();" id="sendUser" ng-disabled="registerForm.$invalid">Register</button>
+	</form>
+</div>
 
 <!-- LOGIN POPUP -->
 
-<div class="loginWrapper">
-	<div ng-include src="'app/views/login.view.html'"></div>
+<div ng-controller="LoginController" class="loginWrapper">
+	<h1>Login User</h1>
+	<form name="loginForm">
+		<div class="form-group" ng-class="{ 'has-error': loginForm.login.$dirty && loginForm.login.$error.required }">
+			<label for="LoginInput2">Login</label>
+			<input type="text" name="login" ng-model="login" class="form-control" placeholder="Login" required>
+			<span ng-show="loginForm.login.$dirty && loginForm.login.$error.required" class="">Login is required</span>
+		</div>
+		<div class="form-group" ng-class="{ 'has-error': loginForm.password.$dirty && loginForm.password.$error.required }">
+			<label for="PasswordInput2">Password</label>
+			<input type="{{inputType}}" name="password" ng-model="password" class="form-control" placeholder="Password" required>
+			<span ng-show="loginForm.password.$dirty && loginForm.password.$error.required" class="">Password is required</span>
+		</div>
 
+		<button type="submit" ng-click="Login()" ng-disabled="loginForm.$invalid">Login</button>
+	</form>
 </div>
-
+<div></div>
 <section id="mainContent">
-	<div id="sidebarWrapper">
-		<ul class="main-menu">
-			<li class="showLoginForm">Login</li>
-			<li>Calendar</li>
-			<li>Events</li>
-		</ul>
+	<div id="sidebarWrapper" class="sideNav">
+		<a href="#">Lorem</a>
+		<a href="#">Lorem</a>
+		<a href="#">Ipsum</a>
 	</div>
-	<div id="mainContainer">
-		<div class="mainContainerTop">
-		
-		</div>
-		<div class="footer">
-			<p>&copy</p>
-		</div>
-	</div>
-	
-</section>
 
+	<div id="mainContainer" class="mainContentWrapper">
+ 			<span class="openbtn sidebarToggle">&#9776;</span>
+
+ 			<div class="calendarWrapper">
+ 				<div class="monthCalendarWrapper">
+ 					<div class="monthCalendarHeader">
+ 						<div class="monthWeekShort">
+ 							MON
+ 						</div>
+ 						<div class="monthWeekShort">
+ 							TUE
+ 						</div>
+ 						<div class="monthWeekShort">
+ 							WED
+ 						</div>
+ 						<div class="monthWeekShort">
+ 							THU
+ 						</div>
+ 						<div class="monthWeekShort">
+ 							FRI
+ 						</div>
+ 						<div class="monthWeekShort">
+ 							SAT
+ 						</div>
+ 						<div class="monthWeekShort">
+ 							SUN
+ 						</div>
+ 					</div>
+ 					<div class="monthCalendarRow">
+ 						<div class="monthCalendarDay">
+ 							1
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							2
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							3
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							4
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							5
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							6
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							7
+ 						</div>
+ 					</div>
+ 					<div class="monthCalendarRow">
+ 						<div class="monthCalendarDay">
+ 							1
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							2
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							3
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							4
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							5
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							6
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							7
+ 						</div>
+ 					</div>
+ 					<div class="monthCalendarRow">
+ 						<div class="monthCalendarDay">
+ 							1
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							2
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							3
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							4
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							5
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							6
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							7
+ 						</div>
+ 					</div>
+ 					<div class="monthCalendarRow">
+ 						<div class="monthCalendarDay">
+ 							1
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							2
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							3
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							4
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							5
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							6
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							7
+ 						</div>
+ 					</div>
+ 					<div class="monthCalendarRow">
+ 						<div class="monthCalendarDay">
+ 							1
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							2
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							3
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							4
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							5
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							6
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							7
+ 						</div>
+ 					</div>
+ 					<div class="monthCalendarRow">
+ 						<div class="monthCalendarDay">
+ 							1
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							2
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							3
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							4
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							5
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							6
+ 						</div>
+ 						<div class="monthCalendarDay">
+ 							7
+ 						</div>
+ 					</div>
+
+ 				</div>
+ 			</div>
+ 		
+	</div>
 	
+</section>	
 </body>
 </html>

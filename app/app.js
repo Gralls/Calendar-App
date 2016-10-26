@@ -1,51 +1,61 @@
-(function () {
-    'use strict';
- 
-    angular
-        .module('app', ['ngRoute', 'ngCookies'])
-        .config(config)
-        .run(run);
- 
-    config.$inject = ['$routeProvider', '$locationProvider'];
-    function config($routeProvider, $locationProvider) {
-        $routeProvider
-            .when('/', {
-                controller: 'HomeController',
-                templateUrl: 'home/home.view.html',
-                controllerAs: 'vm'
-            })
- 
-            .when('views/login', {
-                controller: 'LoginController',
-                templateUrl: 'views/login.view.html',
-                controllerAs: 'vm'
-            })
+(function(){
+'use strict';
+var app = angular.module('app',[]);
 
-            .when('views/register', {
-                controller: 'RegisterController',
-                templateUrl: 'views/login.view.html',
-                controllerAs: 'vm'
-            })
- 
-            .otherwise({ redirectTo: '/views/login' });
-    }
- 
-    run.$inject = ['$rootScope', '$location', '$cookieStore', '$http'];
-    function run($rootScope, $location, $cookieStore, $http) {
-        // keep user logged in after page refresh
-        $rootScope.globals = $cookieStore.get('globals') || {};
-        if ($rootScope.globals.currentUser) {
-            $http.defaults.headers.common['Authorization'] = 'Basic ' + $rootScope.globals.currentUser.authdata; // jshint ignore:line
-        }
- 
-        $rootScope.$on('$locationChangeStart', function (event, next, current) {
-            // redirect to login page if not logged in and trying to access a restricted page
-            var restrictedPage = $.inArray($location.path(), ['views/login']) === -1;
-            var loggedIn = $rootScope.globals.currentUser;
-            if (restrictedPage && !loggedIn) {
-                $location.path('views/login');
-            }
-        });
-    }
- 
+app.controller('RegisterController', function RegisterController($scope, $http){
+
+	$scope.user = {};
+	
+	
+	$scope.$watch('password', function(val){if(val){ $scope.user.password = val;}});		
+	$scope.$watch('email', function(val){if(val){ $scope.user.email = val;}});	
+	$scope.$watch('login', function(val){if(val){$scope.user.login = val;}});	
+	$scope.$watch('name', function(val){if(val){$scope.user.name = val;}});	
+
+		
+	$scope.addUser = function(){
+		return $http.post("/api/users", $scope.user )
+			.then(function successCallback(response) {
+				return response.data;
+				console.log("To nie jeblo");
+			  }, function errorCallback(response) {
+				console.log("TO jeblo");
+			  });	
+	}	
+	
+});
+
+app.controller('LoginController', function LoginController($scope, $http){
+	// Set the default value of inputType
+	$scope.inputType = "password";
+
+	// Hide & show password function
+	$scope.hideShowPassword = function() {
+		if($scope.inputType = "password"){
+			$scope.inputType = "text";
+		} else {
+			$scope.inputType = "password"; 
+		}
+	}
+
+	$scope.Login = function() {
+		$http.get("/api/users")
+			.then(function onRequestCompleted(response) {
+        		$scope.dataUser = response.data;
+        		for(var i = 0; i < $scope.dataUser.length; i++) {
+        			if(($scope.login === $scope.dataUser[i].login) && ($scope.password === $scope.dataUser[i].password)){
+        				console.log("User found");
+        			} else {
+        				console.log("Wrong User");
+        			}
+        		}
+
+        	}, function onError(reason) {
+        		$scope.error = "Cant get data";
+    		});
+
+	}
+});
+
+
 })();
