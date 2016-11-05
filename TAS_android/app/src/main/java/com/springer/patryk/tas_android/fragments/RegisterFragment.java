@@ -10,13 +10,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.api.ApiEndpoint;
 import com.springer.patryk.tas_android.api.RetrofitProvider;
 import com.springer.patryk.tas_android.models.User;
-import com.springer.patryk.tas_android.utils.TextValidation;
+
+import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -32,6 +33,7 @@ public class RegisterFragment extends Fragment {
 
     private ApiEndpoint apiService;
     private Context mContext;
+    private boolean registerProceeded = false;
 
     @BindView(R.id.registerEmail)
     EditText registerEmail;
@@ -39,58 +41,91 @@ public class RegisterFragment extends Fragment {
     EditText registerLogin;
     @BindView(R.id.registerPassword)
     EditText registerPassword;
+    @BindView(R.id.registerPassowrdConfirm)
+    EditText registerPasswordConfirm;
+    @BindView(R.id.registerName)
+    EditText registerName;
     @BindView(R.id.registerButton)
     Button registerButton;
+
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.register_fragment, container, false);
-        mContext=getContext();
-        ButterKnife.bind(this,rootView);
-        apiService = RetrofitProvider.getRetrofitApiInstance(mContext);
-        registerEmail.addTextChangedListener(new TextValidation(registerEmail) {
-            @Override
-            public void validate(TextView textView, String text) {
-                if (Patterns.EMAIL_ADDRESS.matcher(registerEmail.getText().toString()).matches()) {
 
-                }
-                else if(registerEmail.getText().toString().equals(""))
-                    registerEmail.setError("This field is required");
-                else
-                    registerEmail.setError("Wrong email format");
-            }
-        });
+        View rootView = inflater.inflate(R.layout.register_fragment, container, false);
+        mContext = getContext();
+        ButterKnife.bind(this, rootView);
+        apiService = RetrofitProvider.getRetrofitApiInstance(mContext);
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                User user=new User();
-                user.setLogin(registerLogin.getText().toString());
+                if (validateInput()) {
+                    User user = new User();
+                    user.setLogin(registerLogin.getText().toString());
+                    user.setEmail(registerEmail.getText().toString());
+                    user.setPassword(registerPassword.getText().toString());
+                    user.setName(registerName.getText().toString());
 
-                user.setPassword(registerPassword.getText().toString());
+                    Call<User> call=apiService.createUser(user);
+                    call.enqueue(new Callback<User>() {
+                        @Override
+                        public void onResponse(Call<User> call, Response<User> response) {
+                            Toast.makeText(mContext,"Register complete",Toast.LENGTH_LONG).show();
+                        }
 
+                        @Override
+                        public void onFailure(Call<User> call, Throwable t) {
 
-//        Call<User> call=apiService.createUser(user);
-//        call.enqueue(new Callback<User>() {
-//            @Override
-//            public void onResponse(Call<User> call, Response<User> response) {
-//
-//            }
-//
-//            @Override
-//            public void onFailure(Call<User> call, Throwable t) {
-//
-//            }
-//        });
+                        }
+                    });
+
+                }
+
             }
         });
 
         return rootView;
     }
 
-    public void confirmRegister(View view) {
 
+    public boolean validateInput() {
+        boolean validateStatus = true;
 
+        if (!Pattern.matches("^[a-zA-Zsda0-9]{1,10}$", registerLogin.getText().toString())) {
+            if (!checkIsEmpty(registerLogin))
+                registerLogin.setError("Invalid login format");
+            validateStatus = false;
+        }
+        if (!Patterns.EMAIL_ADDRESS.matcher(registerEmail.getText().toString()).matches()) {
+            if (!checkIsEmpty(registerEmail))
+                registerEmail.setError("Invalid e-mail format");
+            validateStatus = false;
+        }
+
+        if (checkIsEmpty(registerPassword))
+            validateStatus = false;
+        if (!comparePassword(registerPassword.getText().toString(), registerPasswordConfirm.getText().toString())) {
+            if (!checkIsEmpty(registerPasswordConfirm))
+                registerPassword.setError("Password is not the same as confirmed password");
+            validateStatus = false;
+        } else
+            registerPassword.setError(null);
+
+        return validateStatus;
     }
+
+    public boolean checkIsEmpty(EditText editText) {
+        if (editText.getText().toString().trim().equals("")) {
+            editText.setError("This field is required");
+            return true;
+        }
+        return false;
+    }
+
+    public boolean comparePassword(String password, String passwordConfirm) {
+        return password.trim().equals(passwordConfirm.trim());
+    }
+
 }

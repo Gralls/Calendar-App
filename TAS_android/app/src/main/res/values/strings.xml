@@ -1,9 +1,10 @@
 <resources>
     <string name="app_name">TAS_android</string>
-    <string name="login">Login</string>
-    <string name="email">Email</string>
-    <string name="registerPassword">Password</string>
-    <string name="confirm_password">Confirm password</string>
+    <string name="login">Login*</string>
+    <string name="email">Email*</string>
+    <string name="registerPassword">Password*</string>
+    <string name="confirm_password">Confirm password*</string>
     <string name="register_confirm">Confirm</string>
     <string name="sign_in_label">Sign in</string>
+    <string name="registerName">Name</string>
 </resources>
