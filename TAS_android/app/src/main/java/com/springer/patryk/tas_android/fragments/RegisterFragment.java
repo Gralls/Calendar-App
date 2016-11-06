@@ -3,7 +3,9 @@ package com.springer.patryk.tas_android.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +18,7 @@ import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.api.ApiEndpoint;
 import com.springer.patryk.tas_android.api.RetrofitProvider;
 import com.springer.patryk.tas_android.models.User;
+import com.springer.patryk.tas_android.utils.InputUtils;
 
 import java.util.regex.Pattern;
 
@@ -30,6 +33,8 @@ import retrofit2.Response;
  */
 
 public class RegisterFragment extends Fragment {
+
+    public static final String LOG_TAG=RegisterFragment.class.getSimpleName();
 
     private ApiEndpoint apiService;
     private Context mContext;
@@ -68,16 +73,19 @@ public class RegisterFragment extends Fragment {
                     user.setPassword(registerPassword.getText().toString());
                     user.setName(registerName.getText().toString());
 
-                    Call<User> call=apiService.createUser(user);
+                    Call<User> call = apiService.createUser(user);
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
-                            Toast.makeText(mContext,"Register complete",Toast.LENGTH_LONG).show();
+                            if (response.code() == 400)
+                                Toast.makeText(mContext,"User already exists",Toast.LENGTH_LONG).show();
+                            else
+                                Toast.makeText(mContext,"User created!",Toast.LENGTH_LONG).show();
                         }
 
                         @Override
                         public void onFailure(Call<User> call, Throwable t) {
-
+                            Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
 
@@ -93,36 +101,30 @@ public class RegisterFragment extends Fragment {
     public boolean validateInput() {
         boolean validateStatus = true;
 
-        if (!Pattern.matches("^[a-zA-Zsda0-9]{1,10}$", registerLogin.getText().toString())) {
-            if (!checkIsEmpty(registerLogin))
+        if (!Pattern.matches("^[a-zA-Zsda0-9]{1,10}$", registerLogin.getText().toString().trim())) {
+            if (!InputUtils.checkIsEmpty(registerLogin))
                 registerLogin.setError("Invalid login format");
             validateStatus = false;
         }
-        if (!Patterns.EMAIL_ADDRESS.matcher(registerEmail.getText().toString()).matches()) {
-            if (!checkIsEmpty(registerEmail))
+        if (!Patterns.EMAIL_ADDRESS.matcher(registerEmail.getText().toString().trim()).matches()) {
+            if (!InputUtils.checkIsEmpty(registerEmail))
                 registerEmail.setError("Invalid e-mail format");
             validateStatus = false;
         }
 
-        if (checkIsEmpty(registerPassword))
+        if (InputUtils.checkIsEmpty(registerPassword))
             validateStatus = false;
-        if (!comparePassword(registerPassword.getText().toString(), registerPasswordConfirm.getText().toString())) {
-            if (!checkIsEmpty(registerPasswordConfirm))
+        if (!InputUtils.checkIsEmpty(registerPasswordConfirm)) {
+            if (!comparePassword(registerPassword.getText().toString(), registerPasswordConfirm.getText().toString())) {
                 registerPassword.setError("Password is not the same as confirmed password");
-            validateStatus = false;
-        } else
-            registerPassword.setError(null);
-
+                validateStatus = false;
+            } else
+                registerPassword.setError(null);
+        }
         return validateStatus;
     }
 
-    public boolean checkIsEmpty(EditText editText) {
-        if (editText.getText().toString().trim().equals("")) {
-            editText.setError("This field is required");
-            return true;
-        }
-        return false;
-    }
+
 
     public boolean comparePassword(String password, String passwordConfirm) {
         return password.trim().equals(passwordConfirm.trim());

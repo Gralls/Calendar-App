@@ -1,5 +1,6 @@
 package com.springer.patryk.tas_android.api;
 
+import com.springer.patryk.tas_android.models.Token;
 import com.springer.patryk.tas_android.models.User;
 
 import retrofit2.Call;
@@ -22,4 +23,8 @@ public interface ApiEndpoint {
 
     @POST("users")
     Call<User> createUser(@Body User user);
+
+    @POST("auth")
+    Call<Token> login(@Body User user);
+
 }
