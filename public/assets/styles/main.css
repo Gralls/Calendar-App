@@ -52,6 +52,11 @@ html, body {
 	font-family: 'Roboto', sans-serif;
 }
 
+[ng-view]{
+	width: 100%;
+	height: 100%;
+}
+
 .loginWrapper{
 	width: 400px;
 	height: 100%;

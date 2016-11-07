@@ -1,61 +1,18 @@
-(function(){
-'use strict';
-var app = angular.module('app',[]);
-
-app.controller('RegisterController', function RegisterController($scope, $http){
-
-	$scope.user = {};
-	
-	
-	$scope.$watch('password', function(val){if(val){ $scope.user.password = val;}});		
-	$scope.$watch('email', function(val){if(val){ $scope.user.email = val;}});	
-	$scope.$watch('login', function(val){if(val){$scope.user.login = val;}});	
-	$scope.$watch('name', function(val){if(val){$scope.user.name = val;}});	
-
-		
-	$scope.addUser = function(){
-		return $http.post("/api/users", $scope.user )
-			.then(function successCallback(response) {
-				return response.data;
-				console.log("To nie jeblo");
-			  }, function errorCallback(response) {
-				console.log("TO jeblo");
-			  });	
-	}	
-	
+angular.module('app', ['ngRoute'])
+  .config(function ($routeProvider) {
+  $routeProvider
+    .when('/login', {
+      templateUrl: 'public/partials/login.html',
+      controller: 'LoginCtrl',
+    })
+    .when('/home', {
+      templateUrl: 'public/partials/home.html',
+    })
+    .when('/register', {
+      templateUrl: 'public/partials/register.html',
+      controller: 'RegisterCtrl'
+    })
+    .otherwise({
+      redirectTo: '/login'
+    });
 });
-
-app.controller('LoginController', function LoginController($scope, $http){
-	// Set the default value of inputType
-	$scope.inputType = "password";
-
-	// Hide & show password function
-	$scope.hideShowPassword = function() {
-		if($scope.inputType = "password"){
-			$scope.inputType = "text";
-		} else {
-			$scope.inputType = "password"; 
-		}
-	}
-
-	$scope.Login = function() {
-		$http.get("/api/users")
-			.then(function onRequestCompleted(response) {
-        		$scope.dataUser = response.data;
-        		for(var i = 0; i < $scope.dataUser.length; i++) {
-        			if(($scope.login === $scope.dataUser[i].login) && ($scope.password === $scope.dataUser[i].password)){
-        				console.log("User found");
-        			} else {
-        				console.log("Wrong User");
-        			}
-        		}
-
-        	}, function onError(reason) {
-        		$scope.error = "Cant get data";
-    		});
-
-	}
-});
-
-
-})();
