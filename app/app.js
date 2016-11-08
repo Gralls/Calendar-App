@@ -1,18 +1,19 @@
-angular.module('app', ['ngRoute'])
-  .config(function ($routeProvider) {
-  $routeProvider
-    .when('/login', {
+angular.module('app', ['ui.router'])
+  .config(function ($stateProvider, $urlRouterProvider) {
+  $stateProvider
+    .state('login', {
+      url: "/login",
       templateUrl: 'public/partials/login.html',
       controller: 'LoginCtrl',
     })
-    .when('/home', {
+    .state('home', {
+      url: "/home",
       templateUrl: 'public/partials/home.html',
     })
-    .when('/register', {
+    .state('register', {
+      url: "/register",
       templateUrl: 'public/partials/register.html',
       controller: 'RegisterCtrl'
     })
-    .otherwise({
-      redirectTo: '/login'
-    });
+    $urlRouterProvider.otherwise('/login');
 });

@@ -1,8 +1,7 @@
 angular.module('app')
  
 .controller('LoginCtrl',
-  function ($scope, $location, AuthService) {
-
+  function ($scope, $state, AuthService) {
     $scope.user = {
         password: '',
         login: '',
@@ -13,7 +12,7 @@ angular.module('app')
       AuthService.login($scope.user)
         // handle success
         .then(function () {
-          $location.path('/home');
+          $state.go('home');
         })
         // handle error
         .catch(function () {
@@ -23,8 +22,7 @@ angular.module('app')
 })
  
 .controller('RegisterCtrl',
-  function ($scope, $location, AuthService) {
-
+  function ($scope, $state, AuthService) {
     $scope.user = {
         name: '',
         password: '',
@@ -37,7 +35,7 @@ angular.module('app')
       AuthService.register($scope.user)
         // handle success
         .then(function () {
-          $location.path('/login');
+          $state.go('login');
         })
         // handle error
         .catch(function () {

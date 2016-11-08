@@ -1,25 +1,27 @@
 <div class="registerWrapper">
 	<div class="registerBox">
 		<h1>Register User</h1>
-		<form ng-submit="register()">
-			<div class="form-group">
+		<form ng-submit="register()" name="registerForm">
+			<div class="form-group" ng-class="{ 'has-error': registerForm.login.$dirty && registerForm.login.$error.required }">
 				<label for="loginInput">Login</label>
-				<input name="login" type="text" ng-model="user.login" class="form-control" id="loginInput" placeholder="Login" >
+				<input name="login" type="text" ng-model="user.login" class="form-control" id="loginInput" placeholder="Login" required>
+				<span ng-show="registerForm.login.$dirty && registerForm.login.$error.required">Login is required</span>
 			</div>
-			<div class="form-group">
+			<div class="form-group" ng-class="{ 'has-error': registerForm.password.$dirty && registerForm.password.$error.required }">
 				<label for="passwordInput">Password</label>
-				<input name="password" type="password" ng-model="user.password" class="form-control" id="passwordInput" placeholder="Password">
+				<input name="password" type="password" ng-model="user.password" class="form-control" id="passwordInput" placeholder="Password" required>
+				<span ng-show="registerForm.password.$dirty && registerForm.password.$error.required">Password is required</span>
 			</div>
 			<div class="form-group">
 				<label for="displayInput">Display</label>
 				<input name="name" type="text" ng-model="user.name" class="form-control" id="displayInput" placeholder="Display Name">
 			</div>
-			<div class="form-group">
+			<div class="form-group" ng-class="{ 'has-error': registerForm.email.$dirty && registerForm.email.$error.required }">
 				<label for="emailInput">Email address</label>
-				<input name="email" type="text" ng-model="user.email" class="form-control" id="emailInput" placeholder="Email">
+				<input name="email" type="text" ng-model="user.email" class="form-control" id="emailInput" placeholder="Email" required>
+				<span ng-show="registerForm.email.$dirty && registerForm.email.$error.required">Password is required</span>
 			</div>
-
-			<button type="submit" id="sendUser">Register</button>
+			<button type="submit" ng-disabled="registerForm.$invalid">Sign Up</button>
 		</form>
 	</div>
 </div>

@@ -23,7 +23,6 @@ angular.module('app').factory('AuthService',
       $http.post('/api/auth', user).then(function(result) {
         if (result.data.success) {
           storeUserCredentials(result.data.token);
-          console.log(result.data.token);
           resolve(result.data.msg);
         } else {
           reject(result.data.msg);
