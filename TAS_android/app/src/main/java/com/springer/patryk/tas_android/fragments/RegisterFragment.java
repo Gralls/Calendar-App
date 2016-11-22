@@ -1,12 +1,10 @@
 package com.springer.patryk.tas_android.fragments;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.annotation.StringDef;
 import android.support.v4.app.Fragment;
-import android.util.Log;
-import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +13,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
+import com.springer.patryk.tas_android.activities.MainActivity;
 import com.springer.patryk.tas_android.api.ApiEndpoint;
 import com.springer.patryk.tas_android.api.RetrofitProvider;
 import com.springer.patryk.tas_android.models.User;
@@ -34,7 +33,7 @@ import retrofit2.Response;
 
 public class RegisterFragment extends Fragment {
 
-    public static final String LOG_TAG=RegisterFragment.class.getSimpleName();
+    public static final String LOG_TAG = RegisterFragment.class.getSimpleName();
 
     private ApiEndpoint apiService;
     private Context mContext;
@@ -62,11 +61,11 @@ public class RegisterFragment extends Fragment {
         mContext = getContext();
         ButterKnife.bind(this, rootView);
         apiService = RetrofitProvider.getRetrofitApiInstance(mContext);
-
+        final Intent intent = new Intent(mContext, MainActivity.class);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (validateInput()) {
+                if (checkIsValidInput()) {
                     User user = new User();
                     user.setLogin(registerLogin.getText().toString());
                     user.setEmail(registerEmail.getText().toString());
@@ -77,10 +76,13 @@ public class RegisterFragment extends Fragment {
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
-                            if (response.code() == 400)
-                                Toast.makeText(mContext,"User already exists",Toast.LENGTH_LONG).show();
-                            else
-                                Toast.makeText(mContext,"User created!",Toast.LENGTH_LONG).show();
+                            if (response.code() == 400) {
+                                Toast.makeText(mContext, "User already exists", Toast.LENGTH_LONG).show();
+                            } else {
+                                Toast.makeText(mContext, "User created!", Toast.LENGTH_LONG).show();
+                                startActivity(intent);
+                            }
+
                         }
 
                         @Override
@@ -98,36 +100,66 @@ public class RegisterFragment extends Fragment {
     }
 
 
-    public boolean validateInput() {
+    public boolean checkIsValidInput() {
         boolean validateStatus = true;
-
-        if (!Pattern.matches("^[a-zA-Zsda0-9]{1,10}$", registerLogin.getText().toString().trim())) {
-            if (!InputUtils.checkIsEmpty(registerLogin))
-                registerLogin.setError("Invalid login format");
+        if (!validateLogin()) {
             validateStatus = false;
         }
-        if (!Patterns.EMAIL_ADDRESS.matcher(registerEmail.getText().toString().trim()).matches()) {
-            if (!InputUtils.checkIsEmpty(registerEmail))
-                registerEmail.setError("Invalid e-mail format");
+        if (!validateEmail()) {
             validateStatus = false;
         }
-
-        if (InputUtils.checkIsEmpty(registerPassword))
+        if (!validatePassword()) {
             validateStatus = false;
-        if (!InputUtils.checkIsEmpty(registerPasswordConfirm)) {
-            if (!comparePassword(registerPassword.getText().toString(), registerPasswordConfirm.getText().toString())) {
-                registerPassword.setError("Password is not the same as confirmed password");
-                validateStatus = false;
-            } else
-                registerPassword.setError(null);
         }
         return validateStatus;
     }
 
+    public boolean validateLogin() {
+        String login = registerLogin.getText().toString();
+        if (InputUtils.checkIsEmpty(login)) {
+            registerLogin.setError("Login cannot be empty");
+            return false;
+        } else if (!InputUtils.checkIsValidLogin(login)) {
+            registerLogin.setError("Invalid login format");
+            return false;
+        }
+        registerLogin.setError(null);
+        return true;
+    }
+
+    public boolean validateEmail() {
+        String email = registerEmail.getText().toString();
+
+        if (InputUtils.checkIsEmpty(email)) {
+            registerEmail.setError("E-mail cannot be empty");
+            return false;
+        } else if (!InputUtils.checkIsValidEmail(email)) {
+            registerEmail.setError("Invalid e-mail format");
+            return false;
+        }
+        registerLogin.setError(null);
+        return true;
+    }
 
 
-    public boolean comparePassword(String password, String passwordConfirm) {
-        return password.trim().equals(passwordConfirm.trim());
+    public boolean validatePassword() {
+        String password = registerPassword.getText().toString();
+        String comparedPassword = registerPasswordConfirm.getText().toString();
+
+        if (!InputUtils.comparePassword(password, comparedPassword)) {
+            registerPassword.setError("Passwords are not the same");
+            registerPasswordConfirm.setError("Passwords are not the same");
+            return false;
+        } else if (InputUtils.checkIsEmpty(password)) {
+            registerPassword.setError("Password cannot be empty");
+            if (InputUtils.checkIsEmpty(comparedPassword)) {
+                registerPasswordConfirm.setError("Password cannot be empty");
+            }
+            return false;
+        }
+        registerPasswordConfirm.setError(null);
+        registerPassword.setError(null);
+        return true;
     }
 
 }
