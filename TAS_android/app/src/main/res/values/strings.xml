@@ -11,6 +11,7 @@
     <string name="logout_dialog_yes">Logout</string>
     <string name="logout_dialog_no">Cancel</string>
     <string name="LoginPattern">^[a-zA-Zsda0-9]{1,10}$</string>
+    <string name="PlaceholderText">Placeholder</string>
 
     <array name="drawer_items">
         <item>Calendar</item>

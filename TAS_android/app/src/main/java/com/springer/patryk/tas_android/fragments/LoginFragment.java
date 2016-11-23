@@ -13,7 +13,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
-import com.springer.patryk.tas_android.activities.HelloActivity;
 import com.springer.patryk.tas_android.activities.MainActivity;
 import com.springer.patryk.tas_android.api.ApiEndpoint;
 import com.springer.patryk.tas_android.api.RetrofitProvider;
@@ -21,15 +20,11 @@ import com.springer.patryk.tas_android.models.Token;
 import com.springer.patryk.tas_android.models.User;
 import com.springer.patryk.tas_android.utils.InputUtils;
 
-import java.util.regex.Pattern;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-
-import static android.provider.AlarmClock.EXTRA_MESSAGE;
 
 /**
  * Created by Patryk on 2016-10-21.
@@ -97,4 +92,6 @@ public class LoginFragment extends Fragment {
         }
         return validateStatus;
     }
+
+
 }

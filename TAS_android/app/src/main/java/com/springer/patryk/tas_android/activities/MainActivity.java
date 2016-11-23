@@ -13,6 +13,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
+import com.springer.patryk.tas_android.fragments.CalendarFragment;
 
 import butterknife.BindArray;
 import butterknife.BindView;
@@ -37,6 +38,7 @@ public class MainActivity extends AppCompatActivity  {
         mContext=this;
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,mDrawerItems));
         mDrawerList.setOnItemClickListener(new DrawerListOnItemClickListener());
+        getSupportFragmentManager().beginTransaction().add(R.id.mainContent, new CalendarFragment()).commit();
     }
 
 
