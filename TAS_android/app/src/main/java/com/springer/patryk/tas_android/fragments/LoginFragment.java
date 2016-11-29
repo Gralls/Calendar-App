@@ -51,6 +51,7 @@ public class LoginFragment extends Fragment {
         ButterKnife.bind(this, rootView);
         apiService = RetrofitProvider.getRetrofitApiInstance(mContext);
         final Intent intent = new Intent(mContext, MainActivity.class);
+        startActivity(intent);
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

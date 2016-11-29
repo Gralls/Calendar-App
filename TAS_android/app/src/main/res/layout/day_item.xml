@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:id="@+id/dayItem"
+    android:gravity="center_horizontal">
 
     <TextView
         android:id="@+id/dayTitle"
@@ -19,7 +21,8 @@
             android:id="@+id/dayTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:background="@drawable/task" />
+            android:background="@drawable/task"
+            />
 
         <ImageView
             android:id="@+id/dayMeeting"
