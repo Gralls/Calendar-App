@@ -9,13 +9,15 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
-import com.springer.patryk.tas_android.adapters.CalendarAdapter;
+import com.springer.patryk.tas_android.adapters.CalendarGridAdapter;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -42,10 +44,12 @@ public class CalendarFragment extends Fragment {
     TextView currentMonth;
     @BindView(R.id.monthView)
     GridView monthView;
+    @BindView(R.id.daysTitle)
+    GridView dayTitles;
 
     private Calendar date;
-    private CalendarAdapter calendarAdapter;
-    private List<String>month;
+    private CalendarGridAdapter calendarGridAdapter;
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -53,16 +57,13 @@ public class CalendarFragment extends Fragment {
         mContext = getContext();
         ButterKnife.bind(this, rootView);
         date = Calendar.getInstance();
-        month = new ArrayList<>();
-        calendarAdapter = new CalendarAdapter(mContext, month);
-        setAdapter();
-        monthView.setAdapter(calendarAdapter);
-        monthView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Toast.makeText(mContext,String.valueOf(position),Toast.LENGTH_LONG).show();
-            }
-        });
+
+        calendarGridAdapter = new CalendarGridAdapter(mContext, date);
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext,android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.day_names));
+        dayTitles.setAdapter(adapter);
+        monthView.setAdapter(calendarGridAdapter);
+
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -80,14 +81,13 @@ public class CalendarFragment extends Fragment {
 
         updateDate();
 
-
         return rootView;
     }
 
     public void updateDate() {
         currentMonth.setText(android.text.format.DateFormat.format("MMMM yyyy", date));
-        calendarAdapter.setCurrentMonth(month);
-        setAdapter();
+        calendarGridAdapter.setCurrentMonth(date);
+
         Log.v(LOG_TAG, String.valueOf(date.getActualMaximum(Calendar.DAY_OF_MONTH)));
     }
 
@@ -97,12 +97,6 @@ public class CalendarFragment extends Fragment {
     public void setNextMonth(){
         date.set(Calendar.MONTH, date.get(Calendar.MONTH) + 1);
     }
-    public void setAdapter(){
-        month.clear();
-        for(int i=1;i<date.getActualMaximum(Calendar.DAY_OF_MONTH)+1;i++){
-            month.add(String.valueOf(i));
-        }
 
-    }
 
 }

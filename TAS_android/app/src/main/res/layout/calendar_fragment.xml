@@ -30,12 +30,18 @@
         android:text="@string/PlaceholderText" />
 
     <GridView
-        android:id="@+id/monthView"
+        android:id="@+id/daysTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_below="@+id/backArrow"
-        android:numColumns="7"
-        android:layout_margin="30dp" />
+        android:layout_below="@id/backArrow"
+        android:numColumns="7" />
+        <GridView
+            android:id="@+id/monthView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/daysTitle"
+            android:numColumns="7" />
+
+
 
 </RelativeLayout>

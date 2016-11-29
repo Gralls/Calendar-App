@@ -20,4 +20,13 @@
         <item>About</item>
     </array>
 
+    <array name="day_names">
+        <item>SUN</item>
+        <item>MON</item>
+        <item>TUE</item>
+        <item>WED</item>
+        <item>THU</item>
+        <item>FRI</item>
+        <item>SAT</item>
+    </array>
 </resources>
