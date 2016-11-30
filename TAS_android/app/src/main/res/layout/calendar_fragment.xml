@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/backArrow"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
         android:layout_alignParentStart="true"
         android:background="@drawable/ic_arrow_back" />
 
@@ -20,14 +20,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:background="@drawable/ic_arrow_forward" />
-
-    <TextView
-        android:id="@+id/monthText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/backArrow"
-        android:layout_centerHorizontal="true"
-        android:text="@string/PlaceholderText" />
 
     <GridView
         android:id="@+id/daysTitle"
@@ -42,6 +34,15 @@
             android:layout_below="@id/daysTitle"
             android:numColumns="7" />
 
+    <TextView
+        android:id="@+id/monthText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/PlaceholderText"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@+id/daysTitle"
+        android:gravity="center_vertical" />
 
 
 </RelativeLayout>

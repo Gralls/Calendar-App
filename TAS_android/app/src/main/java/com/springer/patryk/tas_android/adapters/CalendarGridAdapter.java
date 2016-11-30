@@ -15,6 +15,8 @@ import android.widget.TextView;
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.models.Date;
 
+import org.joda.time.DateTime;
+
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -26,10 +28,10 @@ import java.util.List;
 public class CalendarGridAdapter extends BaseAdapter {
 
     private Context mContext;
-    private Calendar currentMonth;
+    private DateTime currentMonth;
     private List<Date> daysOfMonth;
 
-    public CalendarGridAdapter(Context mContext, Calendar currentMonth) {
+    public CalendarGridAdapter(Context mContext, DateTime currentMonth) {
         this.mContext = mContext;
         setCurrentMonth(currentMonth);
     }
@@ -60,43 +62,42 @@ public class CalendarGridAdapter extends BaseAdapter {
         }
         TextView textView = (TextView) convertView.findViewById(R.id.dayTitle);
         if (daysOfMonth.get(position).getDayOfMonth().equals("")) {
-            textView.setText("");
-        } else
+           convertView.findViewById(R.id.dayItem).setVisibility(View.INVISIBLE);
+        } else {
             textView.setText(String.valueOf(daysOfMonth.get(position).getDayOfMonth()));
-
+            convertView.findViewById(R.id.dayItem).setVisibility(View.VISIBLE);
+        }
         return convertView;
     }
 
-    public void setCurrentMonth(Calendar currentMonth) {
+    public void setCurrentMonth(DateTime currentMonth) {
         this.currentMonth = currentMonth;
         daysOfMonth = convertToList();
-        checkDayOfWeek();
+
+        notifyDataSetChanged();
     }
 
     private List<Date> convertToList() {
         List<Date> month = new ArrayList<>();
-        Calendar calendar = currentMonth;
+        DateTime calendar = currentMonth;
 
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        int firstDayOfMonth = calendar.get(Calendar.DAY_OF_WEEK);
-        int x=1;
-        while (x < firstDayOfMonth) {
+        int firstDayOfCurrentMonth =  calendar.withDayOfMonth(1).getDayOfWeek()%7;
+        int x=0;
+        while (x < firstDayOfCurrentMonth) {
             month.add(new Date(""));
             x++;
         }
-        for (int i = 0; i < currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
-            calendar.set(Calendar.DAY_OF_MONTH, i + 1);
-
-            month.add(new Date(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))
-                        , String.valueOf(calendar.get(Calendar.DAY_OF_WEEK))
-                        , String.valueOf(calendar.get(Calendar.YEAR))
+        calendar=calendar.dayOfMonth().withMinimumValue();
+        for (int i = 0; i < currentMonth.dayOfMonth().getMaximumValue(); i++) {
+            month.add(new Date(String.valueOf(calendar.getDayOfMonth())
+                        , String.valueOf(calendar.getDayOfWeek())
+                        , String.valueOf(calendar.getYear())
                         , ""));
+            calendar=calendar.plusDays(1);
         }
         return month;
     }
 
-    private void checkDayOfWeek() {
-        Log.d("log", String.valueOf(currentMonth.get(Calendar.DAY_OF_WEEK)));
-    }
+
 
 }
