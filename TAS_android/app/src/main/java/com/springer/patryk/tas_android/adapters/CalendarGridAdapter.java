@@ -36,12 +36,12 @@ public class CalendarGridAdapter extends BaseAdapter {
 
     @Override
     public int getCount() {
-        return currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH);
+        return daysOfMonth.size();
     }
 
     @Override
     public Object getItem(int position) {
-        return null;
+        return daysOfMonth.get(position);
     }
 
     @Override
@@ -59,8 +59,10 @@ public class CalendarGridAdapter extends BaseAdapter {
                     .inflate(R.layout.day_item, null);
         }
         TextView textView = (TextView) convertView.findViewById(R.id.dayTitle);
-        textView.setText(daysOfMonth.get(position).getDayOfMonth());
-
+        if (daysOfMonth.get(position).getDayOfMonth().equals("")) {
+            textView.setText("");
+        } else
+            textView.setText(String.valueOf(daysOfMonth.get(position).getDayOfMonth()));
 
         return convertView;
     }
@@ -73,13 +75,28 @@ public class CalendarGridAdapter extends BaseAdapter {
 
     private List<Date> convertToList() {
         List<Date> month = new ArrayList<>();
-        for (int i = 0; i < currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH); i++)
-            month.add(new Date(i+1,0,0));
+        Calendar calendar = currentMonth;
+
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        int firstDayOfMonth = calendar.get(Calendar.DAY_OF_WEEK);
+        int x=1;
+        while (x < firstDayOfMonth) {
+            month.add(new Date(""));
+            x++;
+        }
+        for (int i = 0; i < currentMonth.getActualMaximum(Calendar.DAY_OF_MONTH); i++) {
+            calendar.set(Calendar.DAY_OF_MONTH, i + 1);
+
+            month.add(new Date(String.valueOf(calendar.get(Calendar.DAY_OF_MONTH))
+                        , String.valueOf(calendar.get(Calendar.DAY_OF_WEEK))
+                        , String.valueOf(calendar.get(Calendar.YEAR))
+                        , ""));
+        }
         return month;
     }
 
-    private void checkDayOfWeek(){
-        Log.d("log",String.valueOf(currentMonth.get(Calendar.DAY_OF_WEEK)));
+    private void checkDayOfWeek() {
+        Log.d("log", String.valueOf(currentMonth.get(Calendar.DAY_OF_WEEK)));
     }
 
 }

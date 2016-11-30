@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.adapters.CalendarGridAdapter;
+import com.springer.patryk.tas_android.models.Date;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -63,7 +64,13 @@ public class CalendarFragment extends Fragment {
         ArrayAdapter<String> adapter = new ArrayAdapter<>(mContext,android.R.layout.simple_list_item_1,getResources().getStringArray(R.array.day_names));
         dayTitles.setAdapter(adapter);
         monthView.setAdapter(calendarGridAdapter);
-
+        monthView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Date date = (Date) calendarGridAdapter.getItem(position);
+                Toast.makeText(mContext, String.valueOf(date.getDayOfWeek()), Toast.LENGTH_SHORT).show();
+            }
+        });
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
