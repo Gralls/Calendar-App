@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +13,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
+import com.springer.patryk.tas_android.SessionManager;
 import com.springer.patryk.tas_android.activities.MainActivity;
-import com.springer.patryk.tas_android.api.ApiEndpoint;
-import com.springer.patryk.tas_android.api.RetrofitProvider;
+import com.springer.patryk.tas_android.models.Token;
 import com.springer.patryk.tas_android.models.User;
 import com.springer.patryk.tas_android.utils.InputUtils;
-
-import java.util.regex.Pattern;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -35,10 +35,9 @@ public class RegisterFragment extends Fragment {
 
     public static final String LOG_TAG = RegisterFragment.class.getSimpleName();
 
-    private ApiEndpoint apiService;
     private Context mContext;
     private boolean registerProceeded = false;
-
+    private SessionManager sessionManager;
     @BindView(R.id.registerEmail)
     EditText registerEmail;
     @BindView(R.id.registerLogin)
@@ -60,19 +59,19 @@ public class RegisterFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.register_fragment, container, false);
         mContext = getContext();
         ButterKnife.bind(this, rootView);
-        apiService = RetrofitProvider.getRetrofitApiInstance(mContext);
+        sessionManager = new SessionManager(mContext);
         final Intent intent = new Intent(mContext, MainActivity.class);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (checkIsValidInput()) {
-                    User user = new User();
+                    final User user = new User();
                     user.setLogin(registerLogin.getText().toString());
                     user.setEmail(registerEmail.getText().toString());
                     user.setPassword(registerPassword.getText().toString());
                     user.setName(registerName.getText().toString());
 
-                    Call<User> call = apiService.createUser(user);
+                    Call<User> call = MyApp.getApiService().createUser(user);
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
@@ -80,7 +79,7 @@ public class RegisterFragment extends Fragment {
                                 Toast.makeText(mContext, "User already exists", Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(mContext, "User created!", Toast.LENGTH_LONG).show();
-                                startActivity(intent);
+                                login(user);
                             }
 
                         }
@@ -162,4 +161,44 @@ public class RegisterFragment extends Fragment {
         return true;
     }
 
+    public void login(User user) {
+        Call<Token> call = MyApp.getApiService().login(user);
+        call.enqueue(new Callback<Token>() {
+            @Override
+            public void onResponse(Call<Token> call, Response<Token> response) {
+                if (response.code() == 200) {
+                    sessionManager.setToken(response.body().getToken());
+                    getUserDetails(response.body().getToken());
+                } else
+                    Toast.makeText(mContext, "404 User not found", Toast.LENGTH_LONG).show();
+            }
+
+            @Override
+            public void onFailure(Call<Token> call, Throwable t) {
+                Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_LONG).show();
+            }
+        });
+    }
+
+    public void getUserDetails(String token) {
+        Call<User> call = MyApp.getApiService().getUserDetails(token);
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+                User user = new User();
+                user.setEmail(response.body().getEmail());
+                user.setId(response.body().getId());
+                user.setLogin(response.body().getLogin());
+                user.setName(response.body().getName());
+                sessionManager.createSession(user);
+                startActivity(new Intent(mContext,MainActivity.class));
+                Log.v("Session", sessionManager.getUserDetails().toString());
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
+    }
 }

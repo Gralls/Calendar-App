@@ -16,6 +16,7 @@ public class Task {
     private String startDate;
     private String endDate;
     private String creatorID;
+    private String description;
     private List<String> watchersID = new ArrayList<>();
     private Map<String, Object> additionalProperties = new HashMap<>();
 
@@ -111,4 +112,11 @@ public class Task {
         this.additionalProperties.put(name, value);
     }
 
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public java.lang.String getDescription() {
+        return description;
+    }
 }

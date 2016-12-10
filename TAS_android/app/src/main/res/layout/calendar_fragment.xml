@@ -44,5 +44,4 @@
         android:layout_above="@+id/daysTitle"
         android:gravity="center_vertical" />
 
-
 </RelativeLayout>

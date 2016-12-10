@@ -6,19 +6,21 @@ package com.springer.patryk.tas_android.models;
 
 public class Date {
 
-    private String dayOfMonth;
-    private String dayOfWeek;
-    private String year;
+    private int dayOfMonth;
+    private int dayOfWeek;
+    private int year;
+    private int month;
     private String time;
 
-    public Date(String day_of_month, String day_of_week, String year, String time) {
+    public Date(int day_of_month, int day_of_week,int month, int year, String time) {
         this.dayOfMonth = day_of_month;
         this.dayOfWeek = day_of_week;
         this.year = year;
+        this.month=month;
         this.time = time;
     }
 
-    public Date(String day_of_month) {
+    public Date(int day_of_month) {
         this.dayOfMonth = day_of_month;
     }
 
@@ -26,15 +28,23 @@ public class Date {
         return time;
     }
 
-    public String getDayOfMonth() {
+    public int getDayOfMonth() {
         return dayOfMonth;
     }
 
-    public String getDayOfWeek() {
+    public int getDayOfWeek() {
         return dayOfWeek;
     }
 
-    public String getYear() {
+    public int getYear() {
         return year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public void setMonth(int month) {
+        this.month=month;
     }
 }
