@@ -37,4 +37,8 @@ public interface ApiEndpoint {
 
     @GET("tasks")
     Call<List<Task>> getTasks(@Query("creatorID") String userID);
+
+    @POST("tasks")
+    Call<Task>createTask(@Body Task task);
+
 }

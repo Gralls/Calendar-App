@@ -11,6 +11,7 @@ public class Date {
     private int year;
     private int month;
     private String time;
+    private Task task;
 
     public Date(int day_of_month, int day_of_week, int month, int year, String time) {
         this.dayOfMonth = day_of_month;
@@ -46,6 +47,14 @@ public class Date {
 
     public void setMonth(int month) {
         this.month = month;
+    }
+
+    public Task getTask() {
+        return task;
+    }
+
+    public void setTask(Task task) {
+        this.task = task;
     }
 
     @Override

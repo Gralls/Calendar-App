@@ -52,7 +52,7 @@ public class CalendarGridAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return daysOfMonth.get(position);
+        return daysOfMonth.get(position).getTask();
     }
 
     @Override
@@ -86,9 +86,9 @@ public class CalendarGridAdapter extends BaseAdapter {
         if (date == null) {
             holder.day.setVisibility(View.INVISIBLE);
         } else {
-            holder.dayNumber.setText(String.valueOf(daysOfMonth.get(position).getDayOfMonth()));
-            convertView.findViewById(R.id.dayItem).setVisibility(View.VISIBLE);
-            if (searchTask(date.getDayOfMonth(), date.getMonth(), date.getYear())) {
+            holder.dayNumber.setText(String.valueOf(date.getDayOfMonth()));
+            holder.day.setVisibility(View.VISIBLE);
+            if (searchHasTask(position)) {
                 holder.dayTask.setVisibility(View.VISIBLE);
             } else {
                 holder.dayTask.setVisibility(View.INVISIBLE);
@@ -144,11 +144,13 @@ public class CalendarGridAdapter extends BaseAdapter {
     }
 
 
-    public boolean searchTask(int day, int month, int year) {
-        DateTime current = new DateTime(year, month, day, 0, 0);
+    public boolean searchHasTask(int position) {
+        Date dayAtPosition = daysOfMonth.get(position);
+        DateTime current = new DateTime(dayAtPosition.getYear(), dayAtPosition.getMonth(), dayAtPosition.getDayOfMonth(), 0, 0);
         for (Task task : tasks) {
             DateTime date = dateFormat.parseDateTime(task.getStartDate());
             if (current.toLocalDate().equals(date.toLocalDate())) {
+                daysOfMonth.get(position).setTask(task);
                 return true;
             }
         }

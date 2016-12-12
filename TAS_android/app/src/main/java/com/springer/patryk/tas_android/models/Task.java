@@ -4,6 +4,8 @@ package com.springer.patryk.tas_android.models;
  * Created by Patryk on 2016-11-29.
  */
 
+import com.google.gson.annotations.SerializedName;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,9 +17,11 @@ public class Task {
     private String title;
     private String startDate;
     private String endDate;
-    private String creatorID;
+
+    private String user;
     private String description;
-    private List<String> watchersID = new ArrayList<>();
+
+    private List<String> guests = new ArrayList<>();
     private Map<String, Object> additionalProperties = new HashMap<>();
 
     /**
@@ -77,31 +81,31 @@ public class Task {
     }
 
     /**
-     * @return The creatorID
+     * @return The user
      */
-    public String getCreatorID() {
-        return creatorID;
+    public String getUser() {
+        return user;
     }
 
     /**
-     * @param creatorID The creatorID
+     * @param user The user
      */
-    public void setCreatorID(String creatorID) {
-        this.creatorID = creatorID;
+    public void setUser(String user) {
+        this.user = user;
     }
 
     /**
-     * @return The watchersID
+     * @return The guests
      */
-    public List<String> getWatchersID() {
-        return watchersID;
+    public List<String> getGuests() {
+        return guests;
     }
 
     /**
-     * @param watchersID The watchersID
+     * @param guests The guests
      */
-    public void setWatchersID(List<String> watchersID) {
-        this.watchersID = watchersID;
+    public void setGuests(List<String> guests) {
+        this.guests = guests;
     }
 
     public Map<String, Object> getAdditionalProperties() {

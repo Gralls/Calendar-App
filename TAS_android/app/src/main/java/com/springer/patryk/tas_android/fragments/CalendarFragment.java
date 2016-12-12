@@ -3,6 +3,7 @@ package com.springer.patryk.tas_android.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -55,6 +56,8 @@ public class CalendarFragment extends Fragment {
     GridView monthView;
     @BindView(R.id.daysTitle)
     GridView dayTitles;
+    @BindView(R.id.fab)
+    FloatingActionButton fab;
 
     SessionManager sessionManager;
 
@@ -79,8 +82,8 @@ public class CalendarFragment extends Fragment {
         monthView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Date date = (Date) calendarGridAdapter.getItem(position);
-                Toast.makeText(mContext, String.valueOf(date.getDayOfWeek()), Toast.LENGTH_SHORT).show();
+                Task task=(Task) calendarGridAdapter.getItem(position);
+                Toast.makeText(mContext, task.getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
         backArrow.setOnClickListener(new View.OnClickListener() {
@@ -98,7 +101,16 @@ public class CalendarFragment extends Fragment {
             }
         });
 
-
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainContent,new CreateTaskFragment(),null)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         updateDate();
         getTask();
         return rootView;

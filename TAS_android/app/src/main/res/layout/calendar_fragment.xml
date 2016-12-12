@@ -3,8 +3,8 @@
     android:id="@+id/calendar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center|top">
+    android:gravity="center|top"
+    android:orientation="vertical">
 
 
     <ImageView
@@ -27,21 +27,31 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/backArrow"
         android:numColumns="7" />
-        <GridView
-            android:id="@+id/monthView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/daysTitle"
-            android:numColumns="7" />
+
+    <GridView
+        android:id="@+id/monthView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/daysTitle"
+        android:numColumns="7" />
 
     <TextView
         android:id="@+id/monthText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/PlaceholderText"
+        android:layout_above="@+id/daysTitle"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:layout_above="@+id/daysTitle"
-        android:gravity="center_vertical" />
+        android:gravity="center_vertical"
+        android:text="@string/PlaceholderText" />
 
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add_24dp" />
 </RelativeLayout>

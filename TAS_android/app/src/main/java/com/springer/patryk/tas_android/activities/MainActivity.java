@@ -26,8 +26,7 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity  {
 
 
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
+
     @BindView(R.id.drawerLayout)
     DrawerLayout mNavigationDrawer;
     @BindView(R.id.left_drawer)
@@ -47,16 +46,7 @@ public class MainActivity extends AppCompatActivity  {
         sessionManager = new SessionManager(mContext);
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,mDrawerItems));
         mDrawerList.setOnItemClickListener(new DrawerListOnItemClickListener());
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .addToBackStack("AddTask")
-                        .replace(R.id.mainContent,new CreateTaskFragment())
-                        .commit();
-            }
-        });
+
         getSupportFragmentManager().beginTransaction().add(R.id.mainContent, new CalendarFragment()).commit();
     }
 
