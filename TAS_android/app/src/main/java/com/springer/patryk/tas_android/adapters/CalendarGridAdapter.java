@@ -1,15 +1,12 @@
 package com.springer.patryk.tas_android.adapters;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.springer.patryk.tas_android.R;
@@ -20,10 +17,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -33,7 +27,7 @@ import java.util.List;
 public class CalendarGridAdapter extends BaseAdapter {
 
     private Context mContext;
-    private DateTime currentMonth;
+    private Date currentDay;
     private List<Date> daysOfMonth;
     private List<Task> tasks;
     private DateTimeFormatter dateFormat;
@@ -42,7 +36,13 @@ public class CalendarGridAdapter extends BaseAdapter {
         this.mContext = mContext;
         tasks = new ArrayList<>();
         dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
-        setCurrentMonth(currentMonth);
+        this.currentDay = new Date(
+                currentMonth.getDayOfMonth()
+                , currentMonth.getDayOfWeek()
+                , currentMonth.getMonthOfYear()
+                , currentMonth.getYear()
+                , "");
+        setMonthToShow(currentMonth);
     }
 
     @Override
@@ -60,78 +60,98 @@ public class CalendarGridAdapter extends BaseAdapter {
         return 0;
     }
 
+    static class ViewHolder {
+        TextView dayNumber;
+        ImageView dayTask;
+        ImageView dayMeeting;
+        LinearLayout day;
+        int position;
+    }
+
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         Date date = daysOfMonth.get(position);
+        ViewHolder holder = new ViewHolder();
         if (convertView == null) {
-            // if it's not recycled, initialize some attributes
             convertView = LayoutInflater
                     .from(mContext)
                     .inflate(R.layout.day_item, null);
         }
-        TextView textView = (TextView) convertView.findViewById(R.id.dayTitle);
-        if (date.getDayOfMonth()==0) {
-            convertView.findViewById(R.id.dayItem).setVisibility(View.INVISIBLE);
+        holder.dayNumber = (TextView) convertView.findViewById(R.id.dayTitle);
+        holder.dayTask = (ImageView) convertView.findViewById(R.id.dayTask);
+        holder.dayMeeting = (ImageView) convertView.findViewById(R.id.dayMeeting);
+        holder.day = (LinearLayout) convertView.findViewById(R.id.dayItem);
+        convertView.setTag(holder);
+
+        if (date == null) {
+            holder.day.setVisibility(View.INVISIBLE);
         } else {
-            textView.setText(String.valueOf(daysOfMonth.get(position).getDayOfMonth()));
+            holder.dayNumber.setText(String.valueOf(daysOfMonth.get(position).getDayOfMonth()));
             convertView.findViewById(R.id.dayItem).setVisibility(View.VISIBLE);
             if (searchTask(date.getDayOfMonth(), date.getMonth(), date.getYear())) {
-                 convertView.findViewById(R.id.dayTask).setVisibility(View.VISIBLE);
-            }else{
-                convertView.findViewById(R.id.dayTask).setVisibility(View.INVISIBLE);
+                holder.dayTask.setVisibility(View.VISIBLE);
+            } else {
+                holder.dayTask.setVisibility(View.INVISIBLE);
+            }
+            if (date.equals(currentDay)) {
+                holder.day.setBackgroundResource(R.drawable.today_background);
+            } else {
+                holder.day.setBackgroundResource(0);
             }
         }
 
         return convertView;
     }
 
-    public void setCurrentMonth(DateTime currentMonth) {
-        this.currentMonth = currentMonth;
-        daysOfMonth = convertToList();
-
+    public void setMonthToShow(DateTime monthToShow) {
+        daysOfMonth = convertToList(monthToShow);
         notifyDataSetChanged();
     }
 
-    private List<Date> convertToList() {
+    private List<Date> convertToList(DateTime monthToShow) {
         List<Date> month = new ArrayList<>();
-        DateTime calendar = currentMonth;
 
-        int firstDayOfCurrentMonth = calendar.withDayOfMonth(1).getDayOfWeek() % 7;
-        int x = 0;
-        while (x < firstDayOfCurrentMonth) {
-            month.add(new Date(0));
-            x++;
+        int firstDayOfDisplayedMonth = monthToShow.withDayOfMonth(1).getDayOfWeek() % 7;
+        int emptyPosition = 0;
+
+        while (emptyPosition < firstDayOfDisplayedMonth) {
+            month.add(null);
+            emptyPosition++;
         }
-        calendar = calendar.dayOfMonth().withMinimumValue();
-        for (int i = 0; i < currentMonth.dayOfMonth().getMaximumValue(); i++) {
-            month.add(new Date(calendar.getDayOfMonth()
-                    , calendar.getDayOfWeek()
-                    , calendar.getMonthOfYear()
-                    , calendar.getYear()
-                    , ""));
 
-            calendar = calendar.plusDays(1);
+        int daysCountInMonth = monthToShow.dayOfMonth().getMaximumValue();
+
+        monthToShow = monthToShow
+                .dayOfMonth()
+                .withMinimumValue();
+
+        for (int i = 0; i < daysCountInMonth; i++) {
+            month.add(new Date
+                    (monthToShow.getDayOfMonth()
+                            , monthToShow.getDayOfWeek()
+                            , monthToShow.getMonthOfYear()
+                            , monthToShow.getYear()
+                            , "")
+            );
+            monthToShow = monthToShow.plusDays(1);
         }
         return month;
     }
 
     public void setTasks(List<Task> tasks) {
-        this.tasks=tasks;
+        this.tasks = tasks;
         notifyDataSetChanged();
     }
 
 
     public boolean searchTask(int day, int month, int year) {
-        DateTime current = new DateTime(year, month, day, 10, 30);
+        DateTime current = new DateTime(year, month, day, 0, 0);
         for (Task task : tasks) {
-                DateTime date = dateFormat.parseDateTime(task.getStartDate());
-                if (current.toLocalDate().equals(date.toLocalDate())) {
-                    Log.v("Date", date.toString());
-                    return true;
-                }
-
+            DateTime date = dateFormat.parseDateTime(task.getStartDate());
+            if (current.toLocalDate().equals(date.toLocalDate())) {
+                return true;
+            }
         }
         return false;
     }
-
 }

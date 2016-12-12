@@ -3,9 +3,7 @@ package com.springer.patryk.tas_android.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -107,8 +105,15 @@ public class CalendarFragment extends Fragment {
     }
 
     public void updateDate() {
-        currentMonth.setText(DateUtils.formatDateTime(mContext, dateNow, DateUtils.FORMAT_SHOW_YEAR | DateUtils.FORMAT_NO_MONTH_DAY));
-        calendarGridAdapter.setCurrentMonth(dateNow);
+        String monthLabel = DateUtils.
+                formatDateTime(
+                        mContext,
+                        dateNow,
+                        DateUtils.FORMAT_SHOW_YEAR
+                                | DateUtils.FORMAT_NO_MONTH_DAY
+                );
+        currentMonth.setText(monthLabel);
+        calendarGridAdapter.setMonthToShow(dateNow);
     }
 
     public void setPreviousMonth() {
@@ -127,7 +132,7 @@ public class CalendarFragment extends Fragment {
         call.enqueue(new Callback<List<Task>>() {
             @Override
             public void onResponse(Call<List<Task>> call, Response<List<Task>> response) {
-               calendarGridAdapter.setTasks(response.body());
+                calendarGridAdapter.setTasks(response.body());
             }
 
             @Override
@@ -137,7 +142,4 @@ public class CalendarFragment extends Fragment {
         });
     }
 
-    public void parseData(List<Task> tasks) {
-
-    }
 }

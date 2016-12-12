@@ -12,11 +12,11 @@ public class Date {
     private int month;
     private String time;
 
-    public Date(int day_of_month, int day_of_week,int month, int year, String time) {
+    public Date(int day_of_month, int day_of_week, int month, int year, String time) {
         this.dayOfMonth = day_of_month;
         this.dayOfWeek = day_of_week;
         this.year = year;
-        this.month=month;
+        this.month = month;
         this.time = time;
     }
 
@@ -45,6 +45,14 @@ public class Date {
     }
 
     public void setMonth(int month) {
-        this.month=month;
+        this.month = month;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        Date comparedDate = (Date) obj;
+        return comparedDate.getDayOfMonth() == this.dayOfMonth
+                && comparedDate.getMonth() == this.month
+                && comparedDate.getYear() == this.year;
     }
 }
