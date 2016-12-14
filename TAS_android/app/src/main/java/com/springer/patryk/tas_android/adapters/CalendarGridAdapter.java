@@ -5,7 +5,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,8 +13,6 @@ import com.springer.patryk.tas_android.models.Date;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,12 +27,16 @@ public class CalendarGridAdapter extends BaseAdapter {
     private Date currentDay;
     private List<Date> daysOfMonth;
     private List<Task> tasks;
-    private DateTimeFormatter dateFormat;
+    private List<Task> tasksOfDay;
+
 
     public CalendarGridAdapter(Context mContext, DateTime currentMonth) {
         this.mContext = mContext;
         tasks = new ArrayList<>();
-        dateFormat = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+        tasksOfDay = new ArrayList<>();
+
+
+
         this.currentDay = new Date(
                 currentMonth.getDayOfMonth()
                 , currentMonth.getDayOfWeek()
@@ -52,7 +53,7 @@ public class CalendarGridAdapter extends BaseAdapter {
 
     @Override
     public Object getItem(int position) {
-        return daysOfMonth.get(position).getTask();
+        return daysOfMonth.get(position).getTasks();
     }
 
     @Override
@@ -62,8 +63,8 @@ public class CalendarGridAdapter extends BaseAdapter {
 
     static class ViewHolder {
         TextView dayNumber;
-        ImageView dayTask;
-        ImageView dayMeeting;
+        TextView dayTask;
+        TextView dayMeeting;
         LinearLayout day;
         int position;
     }
@@ -78,18 +79,20 @@ public class CalendarGridAdapter extends BaseAdapter {
                     .inflate(R.layout.day_item, null);
         }
         holder.dayNumber = (TextView) convertView.findViewById(R.id.dayTitle);
-        holder.dayTask = (ImageView) convertView.findViewById(R.id.dayTask);
-        holder.dayMeeting = (ImageView) convertView.findViewById(R.id.dayMeeting);
+        holder.dayTask = (TextView) convertView.findViewById(R.id.dayTask);
+        holder.dayMeeting = (TextView) convertView.findViewById(R.id.dayMeeting);
         holder.day = (LinearLayout) convertView.findViewById(R.id.dayItem);
         convertView.setTag(holder);
-
         if (date == null) {
             holder.day.setVisibility(View.INVISIBLE);
         } else {
+
             holder.dayNumber.setText(String.valueOf(date.getDayOfMonth()));
             holder.day.setVisibility(View.VISIBLE);
             if (searchHasTask(position)) {
                 holder.dayTask.setVisibility(View.VISIBLE);
+                holder.dayTask.setText(String.valueOf(date.getTasks().size()));
+
             } else {
                 holder.dayTask.setVisibility(View.INVISIBLE);
             }
@@ -147,13 +150,15 @@ public class CalendarGridAdapter extends BaseAdapter {
     public boolean searchHasTask(int position) {
         Date dayAtPosition = daysOfMonth.get(position);
         DateTime current = new DateTime(dayAtPosition.getYear(), dayAtPosition.getMonth(), dayAtPosition.getDayOfMonth(), 0, 0);
+        tasksOfDay.clear();
         for (Task task : tasks) {
-            DateTime date = dateFormat.parseDateTime(task.getStartDate());
+            DateTime date = new DateTime(task.getStartDate());
+
             if (current.toLocalDate().equals(date.toLocalDate())) {
-                daysOfMonth.get(position).setTask(task);
-                return true;
+                tasksOfDay.add(task);
             }
         }
-        return false;
+        daysOfMonth.get(position).setTask(tasksOfDay);
+        return tasksOfDay.size() > 0;
     }
 }

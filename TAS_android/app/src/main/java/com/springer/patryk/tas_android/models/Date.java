@@ -1,5 +1,7 @@
 package com.springer.patryk.tas_android.models;
 
+import java.util.List;
+
 /**
  * Created by Patryk on 2016-11-29.
  */
@@ -11,7 +13,7 @@ public class Date {
     private int year;
     private int month;
     private String time;
-    private Task task;
+    private List<Task> tasks;
 
     public Date(int day_of_month, int day_of_week, int month, int year, String time) {
         this.dayOfMonth = day_of_month;
@@ -49,12 +51,12 @@ public class Date {
         this.month = month;
     }
 
-    public Task getTask() {
-        return task;
+    public List<Task> getTasks() {
+        return tasks;
     }
 
-    public void setTask(Task task) {
-        this.task = task;
+    public void setTask(List<Task> tasks) {
+        this.tasks = tasks;
     }
 
     @Override

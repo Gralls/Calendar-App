@@ -63,44 +63,11 @@
             android:scaleY="0.7"
             android:timePickerMode="spinner" />
 
-        <TextView
-            android:id="@+id/newTaskEndDateLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/newTaskStartDate"
-            android:text="End date" />
-
-        <DatePicker
-            android:id="@+id/newTaskEndDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@id/newTaskEndDateLabel"
-            android:layout_marginLeft="-30dp"
-            android:layout_marginRight="-30dp"
-            android:layout_marginTop="-30dp"
-            android:calendarViewShown="false"
-            android:datePickerMode="spinner"
-            android:scaleX="0.7"
-            android:scaleY="0.7" />
-
-        <TimePicker
-            android:id="@+id/newTaskEndTime"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_below="@id/newTaskEndDateLabel"
-            android:layout_marginLeft="-30dp"
-            android:layout_marginRight="-30dp"
-            android:layout_marginTop="-30dp"
-            android:scaleX="0.7"
-            android:scaleY="0.7"
-            android:timePickerMode="spinner" />
-
         <Button
             android:id="@+id/createNewTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/newTaskEndDate"
+            android:layout_below="@id/newTaskStartTime"
             android:text="SUBMIT" />
 
     </RelativeLayout>

@@ -86,8 +86,7 @@ public class CalendarFragment extends Fragment {
         monthView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                Task task=(Task) calendarGridAdapter.getItem(position);
-                Toast.makeText(mContext, task.getTitle(), Toast.LENGTH_SHORT).show();
+
             }
         });
         backArrow.setOnClickListener(new View.OnClickListener() {

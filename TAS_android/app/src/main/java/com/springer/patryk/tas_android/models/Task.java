@@ -16,7 +16,6 @@ public class Task {
     private String id;
     private String title;
     private String startDate;
-    private String endDate;
 
     private String user;
     private String description;
@@ -64,20 +63,6 @@ public class Task {
      */
     public void setStartDate(String startDate) {
         this.startDate = startDate;
-    }
-
-    /**
-     * @return The endDate
-     */
-    public String getEndDate() {
-        return endDate;
-    }
-
-    /**
-     * @param endDate The endDate
-     */
-    public void setEndDate(String endDate) {
-        this.endDate = endDate;
     }
 
     /**
