@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/calendar"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -45,13 +46,39 @@
         android:gravity="center_vertical"
         android:text="@string/PlaceholderText" />
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
+
+
+<android.support.design.widget.FloatingActionButton
+        android:id="@+id/mainFab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_add_24dp" />
+        android:src="@drawable/ic_add_24dp"
+        app:fabSize="normal" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/taskFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/mainFab"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add_24dp"
+        android:visibility="invisible"
+        app:fabSize="mini" />
+    <android.support.design.widget.FloatingActionButton
+        android:id="@+id/meetingsFab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@id/taskFab"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:src="@drawable/ic_add_24dp"
+        android:visibility="invisible"
+        app:fabSize="mini" />
+
 </RelativeLayout>

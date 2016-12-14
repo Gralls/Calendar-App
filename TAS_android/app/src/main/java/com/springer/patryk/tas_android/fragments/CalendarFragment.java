@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 
 import android.widget.GridView;
@@ -20,7 +21,6 @@ import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.SessionManager;
 import com.springer.patryk.tas_android.adapters.CalendarDayOfMonthAdapter;
 import com.springer.patryk.tas_android.adapters.CalendarGridAdapter;
-import com.springer.patryk.tas_android.models.Date;
 import com.springer.patryk.tas_android.models.Task;
 
 import net.danlew.android.joda.DateUtils;
@@ -56,8 +56,12 @@ public class CalendarFragment extends Fragment {
     GridView monthView;
     @BindView(R.id.daysTitle)
     GridView dayTitles;
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
+    @BindView(R.id.mainFab)
+    FloatingActionButton mainFab;
+    @BindView(R.id.taskFab)
+    FloatingActionButton taskFab;
+    @BindView(R.id.meetingsFab)
+    FloatingActionButton meetingsFab;
 
     SessionManager sessionManager;
 
@@ -101,7 +105,25 @@ public class CalendarFragment extends Fragment {
             }
         });
 
-        fab.setOnClickListener(new View.OnClickListener() {
+        mainFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(taskFab.getVisibility()==View.INVISIBLE) {
+                    taskFab.setVisibility(View.VISIBLE);
+                    meetingsFab.setVisibility(View.VISIBLE);
+                    taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
+                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.meetings_move_in));
+                }
+                else{
+                    taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
+                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.meetings_move_out));
+                    taskFab.setVisibility(View.INVISIBLE);
+                    meetingsFab.setVisibility(View.INVISIBLE);
+                }
+
+            }
+        });
+        taskFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getFragmentManager()

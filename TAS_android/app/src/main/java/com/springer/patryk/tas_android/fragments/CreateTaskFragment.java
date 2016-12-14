@@ -18,6 +18,13 @@ import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.SessionManager;
 import com.springer.patryk.tas_android.models.Task;
 
+import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -45,12 +52,12 @@ public class CreateTaskFragment extends Fragment {
     @BindView(R.id.createNewTask)
     Button createTask;
     SessionManager sessionManager;
-
+    DateFormat sdf;
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.new_task_dialog, null);
         ButterKnife.bind(this, rootView);
-
+        sdf=new SimpleDateFormat("yyyy-MM-dd'T'HH:mm'Z'");
         sessionManager = new SessionManager(getContext());
         createTask.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -67,12 +74,17 @@ public class CreateTaskFragment extends Fragment {
         task.setTitle(taskTitle.getText().toString());
         task.setUser(sessionManager.getUserDetails().get("id"));
         task.setDescription(taskDescription.getText().toString());
-        String startDate=taskStartDate.getYear()+"-"+taskStartDate.getMonth()+"-"+taskStartDate.getDayOfMonth()+"T";
-        String startTime=taskStartTime.getCurrentHour()+":"+taskStartTime.getCurrentMinute()+":00.000Z";
-        task.setStartDate(startDate+startTime);
-        String endDate=taskEndDate.getYear()+"-"+taskEndDate.getMonth()+"-"+taskEndDate.getDayOfMonth()+"T";
-        String endTime=taskEndTime.getCurrentHour()+":"+taskEndTime.getCurrentMinute()+":00.000Z";
-        task.setEndDate(endDate+endTime);
+        DateTime startDateTime = new DateTime(taskStartDate.getYear()
+                , (taskStartDate.getMonth()+1)
+                , taskStartDate.getDayOfMonth()
+                , taskStartTime.getCurrentHour()
+                , taskStartTime.getCurrentMinute()
+                , 0
+                , 0);
+        task.setStartDate(startDateTime.toString());
+
+        DateTime endDateTime = new DateTime(taskEndDate.getYear(), (taskEndDate.getMonth()+1), taskEndDate.getDayOfMonth(), taskEndTime.getCurrentHour(), taskEndTime.getCurrentMinute(), 0, 0);
+        task.setEndDate(endDateTime.toString());
         Call<Task>call= MyApp.getApiService().createTask(task);
         call.enqueue(new Callback<Task>() {
             @Override
