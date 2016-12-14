@@ -111,12 +111,14 @@ public class CalendarFragment extends Fragment {
                 if(taskFab.getVisibility()==View.INVISIBLE) {
                     taskFab.setVisibility(View.VISIBLE);
                     meetingsFab.setVisibility(View.VISIBLE);
+                    mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_in));
                     taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
-                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.meetings_move_in));
+                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
                 }
                 else{
                     taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
-                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.meetings_move_out));
+                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
+                    mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_out));
                     taskFab.setVisibility(View.INVISIBLE);
                     meetingsFab.setVisibility(View.INVISIBLE);
                 }

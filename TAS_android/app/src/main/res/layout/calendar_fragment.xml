@@ -56,7 +56,7 @@
         android:layout_alignParentEnd="true"
         android:layout_gravity="bottom|end"
         android:layout_margin="16dp"
-        android:src="@drawable/ic_add_24dp"
+        android:src="@drawable/ic_event_busy"
         app:fabSize="normal" />
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/taskFab"
@@ -65,8 +65,9 @@
         android:layout_above="@id/mainFab"
         android:layout_alignParentEnd="true"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add_24dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+        android:src="@drawable/ic_add_task"
         android:visibility="invisible"
         app:fabSize="mini" />
     <android.support.design.widget.FloatingActionButton
@@ -76,8 +77,8 @@
         android:layout_above="@id/taskFab"
         android:layout_alignParentEnd="true"
         android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add_24dp"
+        android:layout_marginRight="16dp"
+        android:src="@drawable/ic_add_meeting"
         android:visibility="invisible"
         app:fabSize="mini" />
 
