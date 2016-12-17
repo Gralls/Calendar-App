@@ -13,6 +13,7 @@ import java.util.Map;
 
 public class Task {
 
+    @SerializedName("_id")
     private String id;
     private String title;
     private String startDate;

@@ -14,7 +14,6 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
@@ -27,6 +26,7 @@ import net.danlew.android.joda.DateUtils;
 
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 
@@ -86,7 +86,16 @@ public class CalendarFragment extends Fragment {
         monthView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
+                List<Task> tasks = (List<Task>) calendarGridAdapter.getItem(position);
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("tasks",(Serializable)tasks);
+                DayDetailsFragment fragment=new DayDetailsFragment();
+                fragment.setArguments(bundle);
+                getFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainContent,fragment,null)
+                        .addToBackStack(null)
+                        .commit();
             }
         });
         backArrow.setOnClickListener(new View.OnClickListener() {

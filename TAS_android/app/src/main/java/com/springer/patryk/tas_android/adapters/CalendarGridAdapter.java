@@ -27,14 +27,11 @@ public class CalendarGridAdapter extends BaseAdapter {
     private Date currentDay;
     private List<Date> daysOfMonth;
     private List<Task> tasks;
-    private List<Task> tasksOfDay;
 
 
     public CalendarGridAdapter(Context mContext, DateTime currentMonth) {
         this.mContext = mContext;
         tasks = new ArrayList<>();
-        tasksOfDay = new ArrayList<>();
-
 
 
         this.currentDay = new Date(
@@ -86,7 +83,6 @@ public class CalendarGridAdapter extends BaseAdapter {
         if (date == null) {
             holder.day.setVisibility(View.INVISIBLE);
         } else {
-
             holder.dayNumber.setText(String.valueOf(date.getDayOfMonth()));
             holder.day.setVisibility(View.VISIBLE);
             if (searchHasTask(position)) {
@@ -150,7 +146,7 @@ public class CalendarGridAdapter extends BaseAdapter {
     public boolean searchHasTask(int position) {
         Date dayAtPosition = daysOfMonth.get(position);
         DateTime current = new DateTime(dayAtPosition.getYear(), dayAtPosition.getMonth(), dayAtPosition.getDayOfMonth(), 0, 0);
-        tasksOfDay.clear();
+        List<Task> tasksOfDay = new ArrayList<>();
         for (Task task : tasks) {
             DateTime date = new DateTime(task.getStartDate());
 

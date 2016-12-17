@@ -8,6 +8,7 @@ import java.util.List;
 
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.Header;
 import retrofit2.http.POST;
@@ -39,6 +40,8 @@ public interface ApiEndpoint {
     Call<List<Task>> getTasks(@Query("creatorID") String userID);
 
     @POST("tasks")
-    Call<Task>createTask(@Body Task task);
+    Call<Task> createTask(@Body Task task);
 
+    @DELETE("tasks/{id}")
+    Call<Void> deleteTask(@Path("id") String id);
 }

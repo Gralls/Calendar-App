@@ -19,11 +19,6 @@ import com.springer.patryk.tas_android.SessionManager;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
