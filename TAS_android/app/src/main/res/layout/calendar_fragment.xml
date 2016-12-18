@@ -48,38 +48,6 @@
 
 
 
-<android.support.design.widget.FloatingActionButton
-        android:id="@+id/mainFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        android:src="@drawable/ic_add"
-        app:fabSize="normal" />
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/taskFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/mainFab"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="bottom|end"
-        android:layout_marginRight="16dp"
-        android:layout_marginTop="8dp"
-        android:src="@drawable/ic_add_task"
-        android:visibility="invisible"
-        app:fabSize="mini" />
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/meetingsFab"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@id/taskFab"
-        android:layout_alignParentEnd="true"
-        android:layout_gravity="bottom|end"
-        android:layout_marginRight="16dp"
-        android:src="@drawable/ic_add_meeting"
-        android:visibility="invisible"
-        app:fabSize="mini" />
+
 
 </RelativeLayout>

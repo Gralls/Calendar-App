@@ -6,12 +6,13 @@ package com.springer.patryk.tas_android.models;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Task {
+public class Task implements Serializable {
 
     @SerializedName("_id")
     private String id;

@@ -56,12 +56,7 @@ public class CalendarFragment extends Fragment {
     GridView monthView;
     @BindView(R.id.daysTitle)
     GridView dayTitles;
-    @BindView(R.id.mainFab)
-    FloatingActionButton mainFab;
-    @BindView(R.id.taskFab)
-    FloatingActionButton taskFab;
-    @BindView(R.id.meetingsFab)
-    FloatingActionButton meetingsFab;
+
 
     SessionManager sessionManager;
 
@@ -113,36 +108,7 @@ public class CalendarFragment extends Fragment {
             }
         });
 
-        mainFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(taskFab.getVisibility()==View.INVISIBLE) {
-                    taskFab.setVisibility(View.VISIBLE);
-                    meetingsFab.setVisibility(View.VISIBLE);
-                    mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_in));
-                    taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
-                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
-                }
-                else{
-                    taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
-                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
-                    mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_out));
-                    taskFab.setVisibility(View.INVISIBLE);
-                    meetingsFab.setVisibility(View.INVISIBLE);
-                }
 
-            }
-        });
-        taskFab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.mainContent,new CreateTaskFragment(),null)
-                        .addToBackStack(null)
-                        .commit();
-            }
-        });
         updateDate();
         getTask();
         return rootView;

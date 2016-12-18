@@ -1,25 +1,30 @@
 package com.springer.patryk.tas_android.adapters;
 
+
+
+import android.app.Activity;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
+
+import android.os.Bundle;
+import android.os.Parcelable;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
+import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
+import java.io.Serializable;
 import java.util.List;
 
 import retrofit2.Call;
@@ -35,10 +40,12 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
     private List<Task> tasks;
     private Context mContext;
     private static final DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm");
+    private android.support.v4.app.FragmentManager manager;
 
     public TaskListAdapter(List<Task> tasks, Context mContext) {
         this.tasks = tasks;
         this.mContext = mContext;
+        manager = ((AppCompatActivity) mContext).getSupportFragmentManager();
     }
 
     @Override
@@ -80,6 +87,16 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
             description = (TextView) view.findViewById(R.id.taskDescription);
             startDate = (TextView) view.findViewById(R.id.taskStartDate);
             creator = (TextView) view.findViewById(R.id.taskCreator);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Bundle args = new Bundle();
+                    args.putSerializable("Task",tasks.get(getAdapterPosition()));
+                    CreateTaskFragment createTaskFragment=new CreateTaskFragment();
+                    createTaskFragment.setArguments(args);
+                    manager.beginTransaction().replace(R.id.mainContent,createTaskFragment,null).addToBackStack(null).commit();
+                }
+            });
         }
     }
 
@@ -98,7 +115,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
         });
         tasks.remove(position);
         notifyItemRemoved(position);
-        notifyItemRangeChanged(position,getItemCount());
+        notifyItemRangeChanged(position, getItemCount());
     }
 
 }

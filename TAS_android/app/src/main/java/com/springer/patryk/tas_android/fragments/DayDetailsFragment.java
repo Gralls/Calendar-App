@@ -4,19 +4,14 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.Toast;
 
-import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.adapters.TaskListAdapter;
 import com.springer.patryk.tas_android.models.Task;
@@ -26,9 +21,6 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Patryk on 2016-12-16.
@@ -53,6 +45,7 @@ public class DayDetailsFragment extends Fragment {
         ItemTouchHelper.Callback swipeCallback = new SwipeHelper(adapter);
         ItemTouchHelper swipeHelper = new ItemTouchHelper(swipeCallback);
         taskListView.setAdapter(adapter);
+        taskListView.setItemAnimator(new DefaultItemAnimator());
         taskListView.setLayoutManager(new LinearLayoutManager(mContext));
         swipeHelper.attachToRecyclerView(taskListView);
 

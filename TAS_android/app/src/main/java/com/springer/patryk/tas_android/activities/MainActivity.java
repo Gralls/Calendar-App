@@ -9,6 +9,7 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -26,7 +27,12 @@ import butterknife.ButterKnife;
 public class MainActivity extends AppCompatActivity  {
 
 
-
+    @BindView(R.id.mainFab)
+    FloatingActionButton mainFab;
+    @BindView(R.id.taskFab)
+    FloatingActionButton taskFab;
+    @BindView(R.id.meetingsFab)
+    FloatingActionButton meetingsFab;
     @BindView(R.id.drawerLayout)
     DrawerLayout mNavigationDrawer;
     @BindView(R.id.left_drawer)
@@ -46,7 +52,36 @@ public class MainActivity extends AppCompatActivity  {
         sessionManager = new SessionManager(mContext);
         mDrawerList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,mDrawerItems));
         mDrawerList.setOnItemClickListener(new DrawerListOnItemClickListener());
+        mainFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(taskFab.getVisibility()==View.INVISIBLE) {
+                    taskFab.setVisibility(View.VISIBLE);
+                    meetingsFab.setVisibility(View.VISIBLE);
+                    mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_in));
+                    taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
+                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
+                }
+                else{
+                    taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
+                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
+                    mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_out));
+                    taskFab.setVisibility(View.INVISIBLE);
+                    meetingsFab.setVisibility(View.INVISIBLE);
+                }
 
+            }
+        });
+        taskFab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainContent,new CreateTaskFragment(),null)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
         getSupportFragmentManager().beginTransaction().add(R.id.mainContent, new CalendarFragment()).commit();
     }
 
@@ -86,5 +121,20 @@ public class MainActivity extends AppCompatActivity  {
                     Toast.makeText(mContext, "Wybrano Tasks", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    public void hideFabs(){
+        if(taskFab.getVisibility()==View.VISIBLE){
+            taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
+            meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
+            mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_out));
+            taskFab.setVisibility(View.INVISIBLE);
+            meetingsFab.setVisibility(View.INVISIBLE);
+        }
+            mainFab.setVisibility(View.INVISIBLE);
+    }
+
+    public void showMainFab() {
+        mainFab.setVisibility(View.VISIBLE);
     }
 }
