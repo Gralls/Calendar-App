@@ -74,7 +74,9 @@ public class CreateTaskFragment extends Fragment {
 
         return rootView;
     }
+    public void gatherTaskData(){
 
+    }
     public void createTask() {
         task = new Task();
         task.setTitle(taskTitle.getText().toString());

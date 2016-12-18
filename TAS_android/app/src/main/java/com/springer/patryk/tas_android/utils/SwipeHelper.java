@@ -2,6 +2,7 @@ package com.springer.patryk.tas_android.utils;
 
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
+import android.view.MotionEvent;
 
 import com.springer.patryk.tas_android.adapters.TaskListAdapter;
 
@@ -21,10 +22,11 @@ public class SwipeHelper extends ItemTouchHelper.SimpleCallback {
     @Override
     public boolean onMove(RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target) {
         return false;
+
     }
 
     @Override
     public void onSwiped(RecyclerView.ViewHolder viewHolder, int direction) {
-        taskListAdapter.remove(viewHolder.getAdapterPosition());
+        taskListAdapter.deleteTaskFromDB(viewHolder.getAdapterPosition());
     }
 }

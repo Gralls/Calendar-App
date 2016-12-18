@@ -14,6 +14,7 @@ import android.widget.AdapterView;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
@@ -72,7 +73,6 @@ public class CalendarFragment extends Fragment {
         sessionManager = new SessionManager(mContext);
         dateNow = DateTime.now();
 
-
         dayTitles.setAdapter(new CalendarDayOfMonthAdapter(mContext, getResources().getStringArray(R.array.day_names)));
 
         calendarGridAdapter = new CalendarGridAdapter(mContext, dateNow);
@@ -82,15 +82,19 @@ public class CalendarFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 List<Task> tasks = (List<Task>) calendarGridAdapter.getItem(position);
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("tasks",(Serializable)tasks);
-                DayDetailsFragment fragment=new DayDetailsFragment();
-                fragment.setArguments(bundle);
-                getFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.mainContent,fragment,null)
-                        .addToBackStack(null)
-                        .commit();
+                if(tasks.size()>0) {
+                    Bundle bundle = new Bundle();
+                    bundle.putSerializable("tasks", (Serializable) tasks);
+                    DayDetailsFragment fragment = new DayDetailsFragment();
+                    fragment.setArguments(bundle);
+                    getFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.mainContent, fragment, null)
+                            .addToBackStack(null)
+                            .commit();
+                }
+                else
+                    Toast.makeText(mContext,"No task at this day",Toast.LENGTH_SHORT).show();
             }
         });
         backArrow.setOnClickListener(new View.OnClickListener() {

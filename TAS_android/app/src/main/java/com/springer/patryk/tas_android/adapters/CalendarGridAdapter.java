@@ -17,6 +17,8 @@ import org.joda.time.DateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import static android.view.View.GONE;
+
 /**
  * Created by Patryk on 25.11.2016.
  */
@@ -90,7 +92,8 @@ public class CalendarGridAdapter extends BaseAdapter {
                 holder.dayTask.setText(String.valueOf(date.getTasks().size()));
 
             } else {
-                holder.dayTask.setVisibility(View.INVISIBLE);
+                holder.dayTask.setVisibility(View.GONE);
+                holder.dayMeeting.setVisibility(View.GONE);
             }
             if (date.equals(currentDay)) {
                 holder.day.setBackgroundResource(R.drawable.today_background);

@@ -21,8 +21,10 @@ import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.Serializable;
 import java.util.List;
@@ -45,6 +47,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
     public TaskListAdapter(List<Task> tasks, Context mContext) {
         this.tasks = tasks;
         this.mContext = mContext;
+
         manager = ((AppCompatActivity) mContext).getSupportFragmentManager();
     }
 
@@ -100,7 +103,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
         }
     }
 
-    public void remove(int position) {
+    public void deleteTaskFromDB(int position) {
         Call<Void> call = MyApp.getApiService().deleteTask(tasks.get(position).getId());
         call.enqueue(new Callback<Void>() {
             @Override
@@ -113,6 +116,10 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
 
             }
         });
+       removeTaskFromList(position);
+    }
+
+    public void removeTaskFromList(int position){
         tasks.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, getItemCount());
