@@ -116,13 +116,16 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
 
             }
         });
-       removeTaskFromList(position);
+       if(removeTaskFromList(position)){
+           manager.beginTransaction().replace(R.id.mainContent,new CreateTaskFragment(),null).addToBackStack(null).commit();
+       }
     }
 
-    public void removeTaskFromList(int position){
+    public boolean removeTaskFromList(int position){
         tasks.remove(position);
         notifyItemRemoved(position);
         notifyItemRangeChanged(position, getItemCount());
+        return tasks.size()==0;
     }
 
 }

@@ -71,6 +71,7 @@ public class CalendarFragment extends Fragment {
         mContext = getContext();
         ButterKnife.bind(this, rootView);
         sessionManager = new SessionManager(mContext);
+        mContext.getSharedPreferences("DayDetails",Context.MODE_PRIVATE).edit().clear().apply();
         dateNow = DateTime.now();
 
         dayTitles.setAdapter(new CalendarDayOfMonthAdapter(mContext, getResources().getStringArray(R.array.day_names)));

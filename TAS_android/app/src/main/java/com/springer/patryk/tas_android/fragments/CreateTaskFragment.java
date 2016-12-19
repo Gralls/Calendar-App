@@ -1,5 +1,7 @@
 package com.springer.patryk.tas_android.fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 
@@ -46,21 +48,36 @@ public class CreateTaskFragment extends Fragment {
     @BindView(R.id.createNewTask)
     Button createTask;
     SessionManager sessionManager;
-
+    private SharedPreferences sharedPreferences;
     private boolean isNewTask;
     private Task task;
+
+
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.new_task_dialog, null);
         ButterKnife.bind(this, rootView);
         sessionManager = new SessionManager(getContext());
-        ((MainActivity)getActivity()).hideFabs();
+        sharedPreferences = getContext()
+                .getSharedPreferences("DayDetails", Context.MODE_PRIVATE);
+        ((MainActivity) getActivity()).hideFabs();
         if (getArguments() != null) {
             isNewTask = false;
             task = (Task) getArguments().getSerializable("Task");
             setTaskDetails(task);
-        } else
+        } else {
             isNewTask = true;
+            DateTime currentDate;
+            if (!sharedPreferences.getString("CurrentDate", "").equals("")) {
+                currentDate = ISODateTimeFormat.dateTime().parseDateTime(sharedPreferences.getString("CurrentDate", ""));
+            } else {
+                currentDate = DateTime.now();
+            }
+            taskStartDate.updateDate(currentDate.getYear(), currentDate.getMonthOfYear() - 1, currentDate.getDayOfMonth());
+            taskStartTime.setCurrentHour(currentDate.getHourOfDay());
+            taskStartTime.setCurrentMinute(currentDate.getMinuteOfHour());
+        }
+
         createTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -74,9 +91,8 @@ public class CreateTaskFragment extends Fragment {
 
         return rootView;
     }
-    public void gatherTaskData(){
 
-    }
+
     public void createTask() {
         task = new Task();
         task.setTitle(taskTitle.getText().toString());
@@ -131,7 +147,7 @@ public class CreateTaskFragment extends Fragment {
                 , 0);
         task.setStartDate(startDateTime.toString());
 
-        Call<Void> call = MyApp.getApiService().editTask(task.getId(),task);
+        Call<Void> call = MyApp.getApiService().editTask(task.getId(), task);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -148,7 +164,7 @@ public class CreateTaskFragment extends Fragment {
 
     @Override
     public void onDestroyView() {
-        ((MainActivity)getActivity()).showMainFab();
+        ((MainActivity) getActivity()).showMainFab();
         super.onDestroyView();
     }
 }

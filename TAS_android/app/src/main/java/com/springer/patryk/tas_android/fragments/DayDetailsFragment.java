@@ -11,6 +11,7 @@ import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.adapters.TaskListAdapter;
@@ -19,6 +20,8 @@ import com.springer.patryk.tas_android.utils.SwipeHelper;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 
 import java.util.ArrayList;
@@ -35,20 +38,27 @@ public class DayDetailsFragment extends Fragment {
 
     @BindView(R.id.listOfTodaysTasks)
     RecyclerView taskListView;
+    @BindView(R.id.currentDay)
+    TextView currentDay;
 
     private List<Task> taskList;
     private Context mContext;
-    private LocalDate currentDate;
+    private DateTime currentDate;
     private TaskListAdapter adapter;
     private ItemTouchHelper swipeHelper;
+    private DateTimeFormatter dateTimeFormatter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
-
+        dateTimeFormatter= DateTimeFormat.forPattern("dd MMMM yyyy");
         taskList = (List<Task>) getArguments().getSerializable("tasks");
-        currentDate = ISODateTimeFormat.dateTime().parseDateTime(taskList.get(0).getStartDate()).toLocalDate();
+        currentDate = ISODateTimeFormat.dateTime().parseDateTime(taskList.get(0).getStartDate());
+        mContext.getSharedPreferences("DayDetails",Context.MODE_PRIVATE)
+                .edit()
+                .putString("CurrentDate",currentDate.toString())
+                .apply();
         adapter = new TaskListAdapter(taskList, mContext);
         ItemTouchHelper.Callback swipeCallback = new SwipeHelper(adapter);
         swipeHelper = new ItemTouchHelper(swipeCallback);
@@ -64,6 +74,7 @@ public class DayDetailsFragment extends Fragment {
         taskListView.setItemAnimator(new DefaultItemAnimator());
         taskListView.setLayoutManager(new LinearLayoutManager(mContext));
         swipeHelper.attachToRecyclerView(taskListView);
+        currentDay.setText(dateTimeFormatter.print(currentDate));
         checkDates();
 
         return rootView;
@@ -73,7 +84,7 @@ public class DayDetailsFragment extends Fragment {
         List<Integer> indexToRemove = new ArrayList<>();
         for (Task task : taskList) {
             DateTime taskDate = ISODateTimeFormat.dateTime().parseDateTime(task.getStartDate());
-            if (!currentDate.equals(taskDate.toLocalDate())) {
+            if (!currentDate.toLocalDate().equals(taskDate.toLocalDate())) {
                 indexToRemove.add(taskList.indexOf(task));
             }
         }
@@ -81,5 +92,6 @@ public class DayDetailsFragment extends Fragment {
         for (int i : indexToRemove) {
             adapter.removeTaskFromList(i);
         }
+
     }
 }

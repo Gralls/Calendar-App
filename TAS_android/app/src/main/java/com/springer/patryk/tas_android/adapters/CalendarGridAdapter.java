@@ -92,8 +92,8 @@ public class CalendarGridAdapter extends BaseAdapter {
                 holder.dayTask.setText(String.valueOf(date.getTasks().size()));
 
             } else {
-                holder.dayTask.setVisibility(View.GONE);
-                holder.dayMeeting.setVisibility(View.GONE);
+                holder.dayTask.setVisibility(View.INVISIBLE);
+                holder.dayMeeting.setVisibility(View.INVISIBLE);
             }
             if (date.equals(currentDay)) {
                 holder.day.setBackgroundResource(R.drawable.today_background);
