@@ -114,11 +114,6 @@ public class CreateTaskFragment extends Fragment {
         call.enqueue(new Callback<Task>() {
             @Override
             public void onResponse(Call<Task> call, Response<Task> response) {
-                task.setId(response.body().getId());
-                Realm realm=Realm.getDefaultInstance();
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(task);
-                realm.commitTransaction();
                 Toast.makeText(getContext(), "Task created", Toast.LENGTH_SHORT).show();
                 getFragmentManager().popBackStack();
             }

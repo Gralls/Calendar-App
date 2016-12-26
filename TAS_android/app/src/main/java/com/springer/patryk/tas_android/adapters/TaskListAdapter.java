@@ -2,11 +2,8 @@ package com.springer.patryk.tas_android.adapters;
 
 
 
-import android.app.Activity;
 import android.content.Context;
-
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,12 +18,9 @@ import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.ISODateTimeFormat;
 
-import java.io.Serializable;
 import java.util.List;
 
 import retrofit2.Call;

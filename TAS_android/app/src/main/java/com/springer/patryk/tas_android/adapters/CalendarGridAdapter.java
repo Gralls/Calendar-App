@@ -14,14 +14,17 @@ import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.fragments.DayDetailsFragment;
-import com.springer.patryk.tas_android.models.Date;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.format.ISODateTimeFormat;
 
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+
+import io.realm.Realm;
 
 /**
  * Created by Patryk on 25.11.2016.
@@ -29,34 +32,21 @@ import java.util.List;
 
 public class CalendarGridAdapter extends RecyclerView.Adapter<CalendarGridAdapter.ViewHolder> {
 
-    private static final int TYPE_HEADER = 0;
-    private static final int TYPE_REGULAR = 1;
-    private Date currentDay;
-    private List<Date> daysOfMonth;
+
+    private DateTime currentDay;
+    private List<LocalDate> daysOfMonth;
     private List<Task> tasks;
     private Context mContext;
     private FragmentManager manager;
 
     public CalendarGridAdapter(Context context, DateTime currentMonth) {
-        tasks = new ArrayList<>();
+        tasks = Realm.getDefaultInstance().where(Task.class).findAll();
         this.mContext = context;
-        this.currentDay = new Date(
-                currentMonth.getDayOfMonth()
-                , currentMonth.getDayOfWeek()
-                , currentMonth.getMonthOfYear()
-                , currentMonth.getYear()
-                , "");
+        this.currentDay = currentMonth;
         manager = ((AppCompatActivity) mContext).getSupportFragmentManager();
         setMonthToShow(currentMonth);
     }
 
-    @Override
-    public int getItemViewType(int position) {
-        if (position == 0)
-            return TYPE_HEADER;
-        else
-            return TYPE_REGULAR;
-    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -66,21 +56,22 @@ public class CalendarGridAdapter extends RecyclerView.Adapter<CalendarGridAdapte
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        Date date = daysOfMonth.get(position);
+        LocalDate date = daysOfMonth.get(position);
         if (date == null) {
             holder.day.setVisibility(View.INVISIBLE);
         } else {
             holder.dayNumber.setText(String.valueOf(date.getDayOfMonth()));
             holder.day.setVisibility(View.VISIBLE);
-            if (searchHasTask(position)) {
+            int taskAtCurrentDay = tasksCountOnPosition(position);
+            if (taskAtCurrentDay > 0) {
                 holder.dayTask.setVisibility(View.VISIBLE);
-                holder.dayTask.setText(String.valueOf(date.getTasks().size()));
+                holder.dayTask.setText(String.valueOf(taskAtCurrentDay));
 
             } else {
                 holder.dayTask.setVisibility(View.INVISIBLE);
                 holder.dayMeeting.setVisibility(View.INVISIBLE);
             }
-            if (date.equals(currentDay)) {
+            if (date.equals(currentDay.toLocalDate())) {
                 holder.day.setBackgroundResource(R.drawable.today_background);
             } else {
                 holder.day.setBackgroundResource(0);
@@ -90,7 +81,15 @@ public class CalendarGridAdapter extends RecyclerView.Adapter<CalendarGridAdapte
     }
 
     public List<Task> getTasks(int position) {
-        return daysOfMonth.get(position).getTasks();
+        LocalDate date = daysOfMonth.get(position);
+        List<Task> tasksAtCurrentDay = new ArrayList<>();
+        for (Task task : tasks) {
+            DateTime taskDate = ISODateTimeFormat.dateTime().parseDateTime(task.getStartDate());
+            if (taskDate.toLocalDate().equals(date)) {
+                tasksAtCurrentDay.add(task);
+            }
+        }
+        return tasksAtCurrentDay;
     }
 
     @Override
@@ -145,8 +144,8 @@ public class CalendarGridAdapter extends RecyclerView.Adapter<CalendarGridAdapte
         notifyDataSetChanged();
     }
 
-    private List<Date> convertToList(DateTime monthToShow) {
-        List<Date> month = new ArrayList<>();
+    private List<LocalDate> convertToList(DateTime monthToShow) {
+        List<LocalDate> month = new ArrayList<>();
 
         int firstDayOfDisplayedMonth = monthToShow.withDayOfMonth(1).getDayOfWeek() % 7;
         int emptyPosition = 0;
@@ -163,13 +162,8 @@ public class CalendarGridAdapter extends RecyclerView.Adapter<CalendarGridAdapte
                 .withMinimumValue();
 
         for (int i = 0; i < daysCountInMonth; i++) {
-            month.add(new Date
-                    (monthToShow.getDayOfMonth()
-                            , monthToShow.getDayOfWeek()
-                            , monthToShow.getMonthOfYear()
-                            , monthToShow.getYear()
-                            , "")
-            );
+
+            month.add(new LocalDate(monthToShow.toLocalDate()));
             monthToShow = monthToShow.plusDays(1);
         }
         return month;
@@ -181,18 +175,17 @@ public class CalendarGridAdapter extends RecyclerView.Adapter<CalendarGridAdapte
     }
 
 
-    public boolean searchHasTask(int position) {
-        Date dayAtPosition = daysOfMonth.get(position);
-        DateTime current = new DateTime(dayAtPosition.getYear(), dayAtPosition.getMonth(), dayAtPosition.getDayOfMonth(), 0, 0);
-        List<Task> tasksOfDay = new ArrayList<>();
+    public int tasksCountOnPosition(int position) {
+        LocalDate dayAtPosition = daysOfMonth.get(position);
+        DateTime current = new DateTime(dayAtPosition.getYear(), dayAtPosition.getMonthOfYear(), dayAtPosition.getDayOfMonth(), 0, 0);
+        int taskCounter = 0;
         for (Task task : tasks) {
-            DateTime date = new DateTime(task.getStartDate());
+            DateTime date = ISODateTimeFormat.dateTime().parseDateTime(task.getStartDate());
 
             if (current.toLocalDate().equals(date.toLocalDate())) {
-                tasksOfDay.add(task);
+                taskCounter++;
             }
         }
-        daysOfMonth.get(position).setTask(tasksOfDay);
-        return tasksOfDay.size() > 0;
+        return taskCounter;
     }
 }
