@@ -26,6 +26,7 @@ import org.joda.time.format.ISODateTimeFormat;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -108,10 +109,16 @@ public class CreateTaskFragment extends Fragment {
                 , 0);
         task.setStartDate(startDateTime.toString());
 
+
         Call<Task> call = MyApp.getApiService().createTask(task);
         call.enqueue(new Callback<Task>() {
             @Override
             public void onResponse(Call<Task> call, Response<Task> response) {
+                task.setId(response.body().getId());
+                Realm realm=Realm.getDefaultInstance();
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(task);
+                realm.commitTransaction();
                 Toast.makeText(getContext(), "Task created", Toast.LENGTH_SHORT).show();
                 getFragmentManager().popBackStack();
             }

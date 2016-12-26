@@ -12,8 +12,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class Task implements Serializable {
+import io.realm.Realm;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
+public class Task extends RealmObject {
+
+    @PrimaryKey
     @SerializedName("_id")
     private String id;
     private String title;
@@ -21,9 +26,6 @@ public class Task implements Serializable {
 
     private String user;
     private String description;
-
-    private List<String> guests = new ArrayList<>();
-    private Map<String, Object> additionalProperties = new HashMap<>();
 
     /**
      * @return The id
@@ -82,32 +84,18 @@ public class Task implements Serializable {
     }
 
     /**
-     * @return The guests
-     */
-    public List<String> getGuests() {
-        return guests;
-    }
-
-    /**
      * @param guests The guests
      */
     public void setGuests(List<String> guests) {
-        this.guests = guests;
+        List<String> guests1 = guests;
     }
 
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
 
     public void setDescription(String description) {
         this.description = description;
     }
 
-    public java.lang.String getDescription() {
+    public String getDescription() {
         return description;
     }
 }

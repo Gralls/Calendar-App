@@ -1,87 +1,72 @@
 package com.springer.patryk.tas_android.adapters;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
+import com.springer.patryk.tas_android.fragments.DayDetailsFragment;
 import com.springer.patryk.tas_android.models.Date;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.view.View.GONE;
 
 /**
  * Created by Patryk on 25.11.2016.
  */
 
-public class CalendarGridAdapter extends BaseAdapter {
+public class CalendarGridAdapter extends RecyclerView.Adapter<CalendarGridAdapter.ViewHolder> {
 
-    private Context mContext;
+    private static final int TYPE_HEADER = 0;
+    private static final int TYPE_REGULAR = 1;
     private Date currentDay;
     private List<Date> daysOfMonth;
     private List<Task> tasks;
+    private Context mContext;
+    private FragmentManager manager;
 
-
-    public CalendarGridAdapter(Context mContext, DateTime currentMonth) {
-        this.mContext = mContext;
+    public CalendarGridAdapter(Context context, DateTime currentMonth) {
         tasks = new ArrayList<>();
-
-
+        this.mContext = context;
         this.currentDay = new Date(
                 currentMonth.getDayOfMonth()
                 , currentMonth.getDayOfWeek()
                 , currentMonth.getMonthOfYear()
                 , currentMonth.getYear()
                 , "");
+        manager = ((AppCompatActivity) mContext).getSupportFragmentManager();
         setMonthToShow(currentMonth);
     }
 
     @Override
-    public int getCount() {
-        return daysOfMonth.size();
+    public int getItemViewType(int position) {
+        if (position == 0)
+            return TYPE_HEADER;
+        else
+            return TYPE_REGULAR;
     }
 
     @Override
-    public Object getItem(int position) {
-        return daysOfMonth.get(position).getTasks();
+    public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        View itemView = LayoutInflater.from(parent.getContext()).inflate(R.layout.day_item, parent, false);
+        return new ViewHolder(itemView);
     }
 
     @Override
-    public long getItemId(int position) {
-        return 0;
-    }
-
-    static class ViewHolder {
-        TextView dayNumber;
-        TextView dayTask;
-        TextView dayMeeting;
-        LinearLayout day;
-        int position;
-    }
-
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+    public void onBindViewHolder(ViewHolder holder, int position) {
         Date date = daysOfMonth.get(position);
-        ViewHolder holder = new ViewHolder();
-        if (convertView == null) {
-            convertView = LayoutInflater
-                    .from(mContext)
-                    .inflate(R.layout.day_item, null);
-        }
-        holder.dayNumber = (TextView) convertView.findViewById(R.id.dayTitle);
-        holder.dayTask = (TextView) convertView.findViewById(R.id.dayTask);
-        holder.dayMeeting = (TextView) convertView.findViewById(R.id.dayMeeting);
-        holder.day = (LinearLayout) convertView.findViewById(R.id.dayItem);
-        convertView.setTag(holder);
         if (date == null) {
             holder.day.setVisibility(View.INVISIBLE);
         } else {
@@ -102,8 +87,58 @@ public class CalendarGridAdapter extends BaseAdapter {
             }
         }
 
-        return convertView;
     }
+
+    public List<Task> getTasks(int position) {
+        return daysOfMonth.get(position).getTasks();
+    }
+
+    @Override
+    public long getItemId(int position) {
+        return 0;
+    }
+
+    @Override
+    public int getItemCount() {
+        return daysOfMonth.size();
+    }
+
+
+    public class ViewHolder extends RecyclerView.ViewHolder {
+        TextView dayNumber;
+        TextView dayTask;
+        TextView dayMeeting;
+        LinearLayout day;
+
+        public ViewHolder(View itemView) {
+            super(itemView);
+            dayNumber = (TextView) itemView.findViewById(R.id.dayTitle);
+            dayTask = (TextView) itemView.findViewById(R.id.dayTask);
+            dayMeeting = (TextView) itemView.findViewById(R.id.dayMeeting);
+            day = (LinearLayout) itemView.findViewById(R.id.dayItem);
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    List<Task> tasks = getTasks(getAdapterPosition());
+                    if (tasks.size() > 0) {
+                        Bundle bundle = new Bundle();
+                        bundle.putSerializable("tasks", (Serializable) tasks);
+                        DayDetailsFragment fragment = new DayDetailsFragment();
+                        fragment.setArguments(bundle);
+                        manager
+                                .beginTransaction()
+                                .replace(R.id.mainContent, fragment, null)
+                                .addToBackStack(null)
+                                .commit();
+                    } else
+                        Toast.makeText(mContext, "No task at this day", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+        }
+    }
+
 
     public void setMonthToShow(DateTime monthToShow) {
         daysOfMonth = convertToList(monthToShow);

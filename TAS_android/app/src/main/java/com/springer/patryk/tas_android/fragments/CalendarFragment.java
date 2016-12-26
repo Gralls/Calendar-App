@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +36,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -54,7 +58,7 @@ public class CalendarFragment extends Fragment {
     @BindView(R.id.monthText)
     TextView currentMonth;
     @BindView(R.id.monthView)
-    GridView monthView;
+    RecyclerView monthView;
     @BindView(R.id.daysTitle)
     GridView dayTitles;
 
@@ -77,9 +81,10 @@ public class CalendarFragment extends Fragment {
         dayTitles.setAdapter(new CalendarDayOfMonthAdapter(mContext, getResources().getStringArray(R.array.day_names)));
 
         calendarGridAdapter = new CalendarGridAdapter(mContext, dateNow);
+        Log.d(LOG_TAG, Realm.getDefaultInstance().where(Task.class).equalTo("startDate", dateNow.toString()).findAll().toString());
         monthView.setAdapter(calendarGridAdapter);
-
-        monthView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        monthView.setLayoutManager(new GridLayoutManager(mContext,7));
+        /*monthView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 List<Task> tasks = (List<Task>) calendarGridAdapter.getItem(position);
@@ -97,7 +102,7 @@ public class CalendarFragment extends Fragment {
                 else
                     Toast.makeText(mContext,"No task at this day",Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -147,7 +152,12 @@ public class CalendarFragment extends Fragment {
         call.enqueue(new Callback<List<Task>>() {
             @Override
             public void onResponse(Call<List<Task>> call, Response<List<Task>> response) {
+                Realm realm = Realm.getDefaultInstance();
+                realm.beginTransaction();
+                realm.copyToRealmOrUpdate(response.body());
+                realm.commitTransaction();
                 calendarGridAdapter.setTasks(response.body());
+                Log.d(LOG_TAG,"Task: "+realm.where(Task.class).findAll().toString());
             }
 
             @Override

@@ -53,7 +53,19 @@ public class DayDetailsFragment extends Fragment {
         super.onCreate(savedInstanceState);
         mContext = getContext();
         dateTimeFormatter= DateTimeFormat.forPattern("dd MMMM yyyy");
+
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View rootView = inflater.inflate(R.layout.tasks_list_of_day, null);
+        ButterKnife.bind(this, rootView);
         taskList = (List<Task>) getArguments().getSerializable("tasks");
+        if (taskList.size() == 0) {
+            getActivity().onBackPressed();
+            return rootView;
+        }
         currentDate = ISODateTimeFormat.dateTime().parseDateTime(taskList.get(0).getStartDate());
         mContext.getSharedPreferences("DayDetails",Context.MODE_PRIVATE)
                 .edit()
@@ -62,25 +74,17 @@ public class DayDetailsFragment extends Fragment {
         adapter = new TaskListAdapter(taskList, mContext);
         ItemTouchHelper.Callback swipeCallback = new SwipeHelper(adapter);
         swipeHelper = new ItemTouchHelper(swipeCallback);
-    }
-
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.tasks_list_of_day, null);
-        ButterKnife.bind(this, rootView);
-
         taskListView.setAdapter(adapter);
         taskListView.setItemAnimator(new DefaultItemAnimator());
         taskListView.setLayoutManager(new LinearLayoutManager(mContext));
         swipeHelper.attachToRecyclerView(taskListView);
         currentDay.setText(dateTimeFormatter.print(currentDate));
-        checkDates();
+        removeTaskFromAdapter(checkDates());
 
         return rootView;
     }
 
-    public void checkDates() {
+    public List<Integer> checkDates() {
         List<Integer> indexToRemove = new ArrayList<>();
         for (Task task : taskList) {
             DateTime taskDate = ISODateTimeFormat.dateTime().parseDateTime(task.getStartDate());
@@ -88,10 +92,12 @@ public class DayDetailsFragment extends Fragment {
                 indexToRemove.add(taskList.indexOf(task));
             }
         }
+        return indexToRemove;
+    }
 
+    public void removeTaskFromAdapter(List<Integer> indexToRemove) {
         for (int i : indexToRemove) {
             adapter.removeTaskFromList(i);
         }
-
     }
 }

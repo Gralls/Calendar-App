@@ -6,6 +6,7 @@ import com.springer.patryk.tas_android.api.ApiEndpoint;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
+import io.realm.Realm;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -28,6 +29,7 @@ public class MyApp extends Application {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(ApiEndpoint.class);
+        Realm.init(this);
     }
 
     public static ApiEndpoint getApiService() {

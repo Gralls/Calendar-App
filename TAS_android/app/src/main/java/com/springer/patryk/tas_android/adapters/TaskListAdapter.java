@@ -72,9 +72,9 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
         return 0;
     }
 
+
     @Override
     public int getItemCount() {
-
         return tasks.size();
     }
 
@@ -94,7 +94,7 @@ public class TaskListAdapter extends RecyclerView.Adapter<TaskListAdapter.ViewHo
                 @Override
                 public void onClick(View view) {
                     Bundle args = new Bundle();
-                    args.putSerializable("Task",tasks.get(getAdapterPosition()));
+               //     args.putSerializable("Task",tasks.get(getAdapterPosition()));
                     CreateTaskFragment createTaskFragment=new CreateTaskFragment();
                     createTaskFragment.setArguments(args);
                     manager.beginTransaction().replace(R.id.mainContent,createTaskFragment,null).addToBackStack(null).commit();
