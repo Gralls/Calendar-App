@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,16 +30,16 @@ public class MainActivity extends AppCompatActivity  {
 
     @BindView(R.id.mainFab)
     FloatingActionButton mainFab;
-    @BindView(R.id.taskFab)
-    FloatingActionButton taskFab;
-    @BindView(R.id.meetingsFab)
-    FloatingActionButton meetingsFab;
     @BindView(R.id.drawerLayout)
     DrawerLayout mNavigationDrawer;
     @BindView(R.id.left_drawer)
     ListView mDrawerList;
     @BindArray(R.array.drawer_items)
     String[] mDrawerItems;
+    @BindView(R.id.tasksFabLayout)
+    LinearLayout taskFabLayout;
+    @BindView(R.id.meetingsFabLayout)
+    LinearLayout meetingFabLayout;
 
     private SessionManager sessionManager;
     private Context mContext;
@@ -55,24 +56,24 @@ public class MainActivity extends AppCompatActivity  {
         mainFab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(taskFab.getVisibility()==View.INVISIBLE) {
-                    taskFab.setVisibility(View.VISIBLE);
-                    meetingsFab.setVisibility(View.VISIBLE);
+                if (taskFabLayout.getVisibility() == View.INVISIBLE) {
+                    taskFabLayout.setVisibility(View.VISIBLE);
+                    meetingFabLayout.setVisibility(View.VISIBLE);
                     mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_in));
-                    taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
-                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
+                    taskFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
+                    meetingFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
                 }
                 else{
-                    taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
-                    meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
+                    taskFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
+                    meetingFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
                     mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_out));
-                    taskFab.setVisibility(View.INVISIBLE);
-                    meetingsFab.setVisibility(View.INVISIBLE);
+                    taskFabLayout.setVisibility(View.INVISIBLE);
+                    meetingFabLayout.setVisibility(View.INVISIBLE);
                 }
 
             }
         });
-        taskFab.setOnClickListener(new View.OnClickListener() {
+        taskFabLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 getSupportFragmentManager()
@@ -124,12 +125,12 @@ public class MainActivity extends AppCompatActivity  {
     }
 
     public void hideFabs(){
-        if(taskFab.getVisibility()==View.VISIBLE){
-            taskFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
-            meetingsFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
+        if (taskFabLayout.getVisibility() == View.VISIBLE) {
+            taskFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
+            meetingFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
             mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_out));
-            taskFab.setVisibility(View.INVISIBLE);
-            meetingsFab.setVisibility(View.INVISIBLE);
+            taskFabLayout.setVisibility(View.INVISIBLE);
+            meetingFabLayout.setVisibility(View.INVISIBLE);
         }
             mainFab.setVisibility(View.INVISIBLE);
     }

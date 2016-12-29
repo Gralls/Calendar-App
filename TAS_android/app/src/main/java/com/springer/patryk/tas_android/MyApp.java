@@ -20,6 +20,7 @@ public class MyApp extends Application {
 
     public static final String BASE_URL = "http://10.0.2.2:8080/api/";
     public static final String BASE_URL_DEVICE="http://192.168.0.10:8080/api/";
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -29,7 +30,9 @@ public class MyApp extends Application {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
                 .create(ApiEndpoint.class);
+
         Realm.init(this);
+
     }
 
     public static ApiEndpoint getApiService() {

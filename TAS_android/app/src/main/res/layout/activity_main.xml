@@ -13,8 +13,7 @@
         <FrameLayout
             android:id="@+id/mainContent"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-        </FrameLayout>
+            android:layout_height="match_parent"></FrameLayout>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/mainFab"
@@ -27,30 +26,66 @@
             android:src="@drawable/ic_add"
             app:fabSize="normal" />
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/taskFab"
+        <LinearLayout
+            android:id="@+id/tasksFabLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_above="@id/mainFab"
             android:layout_alignParentEnd="true"
-            android:layout_gravity="bottom|end"
-            android:layout_marginRight="16dp"
-            android:layout_marginTop="8dp"
-            android:src="@drawable/ic_add_task"
-            android:visibility="invisible"
-            app:fabSize="mini" />
+            android:orientation="horizontal"
+            android:visibility="invisible">
 
-        <android.support.design.widget.FloatingActionButton
-            android:id="@+id/meetingsFab"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/fab_backround"
+                android:padding="5dp"
+                android:elevation="5dp"
+                android:text="Add task" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/taskFab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:layout_marginRight="16dp"
+                android:layout_marginTop="8dp"
+                android:elevation="5dp"
+                android:src="@drawable/ic_add_task"
+                app:fabSize="mini" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/meetingsFabLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_above="@id/taskFab"
+            android:layout_above="@id/tasksFabLayout"
             android:layout_alignParentEnd="true"
-            android:layout_gravity="bottom|end"
-            android:layout_marginRight="16dp"
-            android:src="@drawable/ic_add_meeting"
-            android:visibility="invisible"
-            app:fabSize="mini" />
+            android:orientation="horizontal"
+            android:visibility="invisible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginRight="5dp"
+                android:background="@drawable/fab_backround"
+                android:padding="5dp"
+                android:elevation="5dp"
+                android:text="Add meeting" />
+
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/meetingsFab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="bottom|end"
+                android:elevation="5dp"
+                android:layout_marginRight="16dp"
+                android:src="@drawable/ic_add_meeting"
+                app:fabSize="mini" />
+        </LinearLayout>
     </RelativeLayout>
 
 

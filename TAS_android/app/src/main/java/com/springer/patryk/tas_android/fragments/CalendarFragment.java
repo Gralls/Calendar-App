@@ -3,17 +3,9 @@ package com.springer.patryk.tas_android.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.Fragment;
-import android.support.v7.widget.GridLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AnimationUtils;
-import android.widget.AdapterView;
-
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -30,13 +22,13 @@ import net.danlew.android.joda.DateUtils;
 
 import org.joda.time.DateTime;
 
-import java.io.Serializable;
-import java.util.HashMap;
 import java.util.List;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
+import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -45,7 +37,7 @@ import retrofit2.Response;
  * Created by Patryk on 23.11.2016.
  */
 
-public class CalendarFragment extends Fragment {
+public class CalendarFragment extends BaseFragment {
 
     private Context mContext;
     private static final String LOG_TAG = CalendarFragment.class.getSimpleName();
@@ -58,7 +50,7 @@ public class CalendarFragment extends Fragment {
     @BindView(R.id.monthText)
     TextView currentMonth;
     @BindView(R.id.monthView)
-    RecyclerView monthView;
+    RealmRecyclerView monthView;
     @BindView(R.id.daysTitle)
     GridView dayTitles;
 
@@ -67,42 +59,33 @@ public class CalendarFragment extends Fragment {
 
     private DateTime dateNow;
     private CalendarGridAdapter calendarGridAdapter;
-
-    @Nullable
+    private CalendarDayOfMonthAdapter calendarDayOfMonthAdapter;
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.calendar_fragment, container, false);
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
         mContext = getContext();
-        ButterKnife.bind(this, rootView);
         sessionManager = new SessionManager(mContext);
-        mContext.getSharedPreferences("DayDetails",Context.MODE_PRIVATE).edit().clear().apply();
         dateNow = DateTime.now();
-
-        dayTitles.setAdapter(new CalendarDayOfMonthAdapter(mContext, getResources().getStringArray(R.array.day_names)));
-
-        calendarGridAdapter = new CalendarGridAdapter(mContext, dateNow);
-        Log.d(LOG_TAG, Realm.getDefaultInstance().where(Task.class).equalTo("startDate", dateNow.toString()).findAll().toString());
-        monthView.setAdapter(calendarGridAdapter);
-        monthView.setLayoutManager(new GridLayoutManager(mContext,7));
-        /*monthView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        userDetails = sessionManager.getUserDetails();
+        updateTasks(userDetails.get("id"));
+        final RealmResults<Task> realmResults = realm.where(Task.class).findAll();
+        realmResults.addChangeListener(new RealmChangeListener<RealmResults<Task>>() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                List<Task> tasks = (List<Task>) calendarGridAdapter.getItem(position);
-                if(tasks.size()>0) {
-                    Bundle bundle = new Bundle();
-                    bundle.putSerializable("tasks", (Serializable) tasks);
-                    DayDetailsFragment fragment = new DayDetailsFragment();
-                    fragment.setArguments(bundle);
-                    getFragmentManager()
-                            .beginTransaction()
-                            .replace(R.id.mainContent, fragment, null)
-                            .addToBackStack(null)
-                            .commit();
-                }
-                else
-                    Toast.makeText(mContext,"No task at this day",Toast.LENGTH_SHORT).show();
+            public void onChange(RealmResults<Task> element) {
+                calendarGridAdapter.notifyDataSetChanged();
             }
-        });*/
+        });
+        calendarGridAdapter = new CalendarGridAdapter(getActivity(), dateNow, realmResults, true, true);
+        calendarDayOfMonthAdapter = new CalendarDayOfMonthAdapter(mContext, getResources().getStringArray(R.array.day_names));
+    }
+
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        dayTitles.setAdapter(calendarDayOfMonthAdapter);
+        monthView.setAdapter(calendarGridAdapter);
+
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -117,11 +100,14 @@ public class CalendarFragment extends Fragment {
                 updateDate();
             }
         });
-
-
         updateDate();
-        getTask();
-        return rootView;
+    }
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        mContext.getSharedPreferences("DayDetails", Context.MODE_PRIVATE).edit().clear().apply();
+        return inflater.inflate(R.layout.calendar_fragment, container, false);
     }
 
     public void updateDate() {
@@ -146,25 +132,26 @@ public class CalendarFragment extends Fragment {
         updateDate();
     }
 
-    public void getTask() {
-        HashMap<String, String> userDetails = sessionManager.getUserDetails();
+    public void updateUserTasks() {
+
         Call<List<Task>> call = MyApp.getApiService().getTasks(userDetails.get("id"));
+
         call.enqueue(new Callback<List<Task>>() {
             @Override
-            public void onResponse(Call<List<Task>> call, Response<List<Task>> response) {
-                Realm realm = Realm.getDefaultInstance();
-                realm.beginTransaction();
-                realm.copyToRealmOrUpdate(response.body());
-                realm.commitTransaction();
-                calendarGridAdapter.setTasks(response.body());
-                Log.d(LOG_TAG,"Task: "+realm.where(Task.class).findAll().toString());
+            public void onResponse(Call<List<Task>> call, final Response<List<Task>> response) {
+                realm.executeTransaction(new Realm.Transaction() {
+                    @Override
+                    public void execute(Realm realm) {
+                        realm.insertOrUpdate(response.body());
+                    }
+                });
             }
-
             @Override
             public void onFailure(Call<List<Task>> call, Throwable t) {
-
+                Toast.makeText(mContext, "Check internet connection", Toast.LENGTH_SHORT).show();
             }
         });
     }
+
 
 }

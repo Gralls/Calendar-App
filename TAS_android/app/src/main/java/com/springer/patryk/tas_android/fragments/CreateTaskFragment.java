@@ -4,8 +4,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,7 +23,6 @@ import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import io.realm.Realm;
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -35,7 +32,7 @@ import retrofit2.Response;
  * Created by Patryk on 10.12.2016.
  */
 
-public class CreateTaskFragment extends Fragment {
+public class CreateTaskFragment extends BaseFragment {
 
     @BindView(R.id.newTaskTitle)
     EditText taskTitle;
@@ -53,19 +50,34 @@ public class CreateTaskFragment extends Fragment {
     private boolean isNewTask;
     private Task task;
 
+    @Override
+    public void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        sessionManager = new SessionManager(getContext());
+        userDetails = sessionManager.getUserDetails();
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.new_task_dialog, null);
-        ButterKnife.bind(this, rootView);
-        sessionManager = new SessionManager(getContext());
+
         sharedPreferences = getContext()
                 .getSharedPreferences("DayDetails", Context.MODE_PRIVATE);
         ((MainActivity) getActivity()).hideFabs();
+
+
+        return rootView;
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
         if (getArguments() != null) {
             isNewTask = false;
-            task = (Task) getArguments().getSerializable("Task");
-            setTaskDetails(task);
+            String id = (String) getArguments().getSerializable("Task");
+            task = realm.where(Task.class).equalTo("id", id).findFirst();
+
+            setTaskDetails();
         } else {
             isNewTask = true;
             DateTime currentDate;
@@ -89,10 +101,7 @@ public class CreateTaskFragment extends Fragment {
             }
         });
 
-
-        return rootView;
     }
-
 
     public void createTask() {
         task = new Task();
@@ -115,6 +124,7 @@ public class CreateTaskFragment extends Fragment {
             @Override
             public void onResponse(Call<Task> call, Response<Task> response) {
                 Toast.makeText(getContext(), "Task created", Toast.LENGTH_SHORT).show();
+                updateTasks(userDetails.get("id"));
                 getFragmentManager().popBackStack();
             }
 
@@ -125,7 +135,7 @@ public class CreateTaskFragment extends Fragment {
         });
     }
 
-    public void setTaskDetails(Task task) {
+    public void setTaskDetails() {
         taskTitle.setText(task.getTitle());
         taskDescription.setText(task.getDescription());
         DateTime dateTime = ISODateTimeFormat.dateTime().parseDateTime(task.getStartDate());
@@ -136,20 +146,25 @@ public class CreateTaskFragment extends Fragment {
     }
 
     public void editTask() {
-        task.setTitle(taskTitle.getText().toString());
-        task.setUser(sessionManager.getUserDetails().get("id"));
-        task.setDescription(taskDescription.getText().toString());
+        realm.executeTransaction(new Realm.Transaction() {
+            @Override
+            public void execute(Realm realm) {
+                task.setTitle(taskTitle.getText().toString());
+                task.setUser(sessionManager.getUserDetails().get("id"));
+                task.setDescription(taskDescription.getText().toString());
 
-        DateTime startDateTime = new DateTime(taskStartDate.getYear()
-                , (taskStartDate.getMonth() + 1)
-                , taskStartDate.getDayOfMonth()
-                , taskStartTime.getCurrentHour()
-                , taskStartTime.getCurrentMinute()
-                , 0
-                , 0);
-        task.setStartDate(startDateTime.toString());
-
-        Call<Void> call = MyApp.getApiService().editTask(task.getId(), task);
+                DateTime startDateTime = new DateTime(taskStartDate.getYear()
+                        , (taskStartDate.getMonth() + 1)
+                        , taskStartDate.getDayOfMonth()
+                        , taskStartTime.getCurrentHour()
+                        , taskStartTime.getCurrentMinute()
+                        , 0
+                        , 0);
+                task.setStartDate(startDateTime.toString());
+            }
+        });
+        Task taskToUpdate = realm.copyFromRealm(task);
+        Call<Void> call = MyApp.getApiService().editTask(taskToUpdate.getId(), taskToUpdate);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

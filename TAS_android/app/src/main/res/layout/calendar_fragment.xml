@@ -29,10 +29,13 @@
         android:layout_below="@id/backArrow"
         android:numColumns="7" />
 
-    <android.support.v7.widget.RecyclerView
+    <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
         android:id="@+id/monthView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        app:rrvIsRefreshable="false"
+        app:rrvLayoutType="Grid"
+        app:rrvGridLayoutSpanCount="7"
         android:layout_below="@id/daysTitle"/>
 
     <TextView

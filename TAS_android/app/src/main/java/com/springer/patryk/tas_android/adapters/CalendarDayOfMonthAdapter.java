@@ -4,13 +4,10 @@ import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.springer.patryk.tas_android.R;
-
-import java.util.zip.Inflater;
 
 /**
  * Created by Patryk on 2016-11-30.
