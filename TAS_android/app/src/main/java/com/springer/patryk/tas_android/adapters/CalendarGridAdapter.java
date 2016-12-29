@@ -14,7 +14,7 @@ import com.springer.patryk.tas_android.fragments.DayDetailsFragment;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
-import org.joda.time.format.ISODateTimeFormat;
+import org.joda.time.LocalDate;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -108,8 +108,8 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<Task, Cal
     public int tasksCountOnPosition(DateTime currentDate) {
         int taskCounter = 0;
         for (Task task : realmResults) {
-            DateTime date = ISODateTimeFormat.dateTime().parseDateTime(task.getStartDate());
-            if (currentDate.toLocalDate().equals(date.toLocalDate())) {
+            LocalDate localDate = LocalDate.parse(task.getStartDate());
+            if (currentDate.toLocalDate().equals(localDate)) {
                 taskCounter++;
             }
         }

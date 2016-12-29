@@ -20,6 +20,8 @@ import com.springer.patryk.tas_android.activities.MainActivity;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.joda.time.format.ISODateTimeFormat;
 
 import butterknife.BindView;
@@ -116,8 +118,8 @@ public class CreateTaskFragment extends BaseFragment {
                 , taskStartTime.getCurrentMinute()
                 , 0
                 , 0);
-        task.setStartDate(startDateTime.toString());
-
+        task.setStartDate(startDateTime.toLocalDate().toString());
+        task.setStartTime(startDateTime.toLocalTime().toString());
 
         Call<Task> call = MyApp.getApiService().createTask(task);
         call.enqueue(new Callback<Task>() {
@@ -138,11 +140,11 @@ public class CreateTaskFragment extends BaseFragment {
     public void setTaskDetails() {
         taskTitle.setText(task.getTitle());
         taskDescription.setText(task.getDescription());
-        DateTime dateTime = ISODateTimeFormat.dateTime().parseDateTime(task.getStartDate());
-        dateTime.getYear();
-        taskStartDate.updateDate(dateTime.getYear(), dateTime.getMonthOfYear() - 1, dateTime.getDayOfMonth());
-        taskStartTime.setCurrentHour(dateTime.getHourOfDay());
-        taskStartTime.setCurrentMinute(dateTime.getMinuteOfHour());
+        LocalDate localDate = LocalDate.parse(task.getStartDate());
+        LocalTime localTime = LocalTime.parse(task.getStartTime());
+        taskStartDate.updateDate(localDate.getYear(), localDate.getMonthOfYear() - 1, localDate.getDayOfMonth());
+        taskStartTime.setCurrentHour(localTime.getHourOfDay());
+        taskStartTime.setCurrentMinute(localTime.getMinuteOfHour());
     }
 
     public void editTask() {
@@ -160,7 +162,9 @@ public class CreateTaskFragment extends BaseFragment {
                         , taskStartTime.getCurrentMinute()
                         , 0
                         , 0);
-                task.setStartDate(startDateTime.toString());
+
+                task.setStartDate(startDateTime.toLocalDate().toString());
+                task.setStartTime(startDateTime.toLocalTime().toString());
             }
         });
         Task taskToUpdate = realm.copyFromRealm(task);

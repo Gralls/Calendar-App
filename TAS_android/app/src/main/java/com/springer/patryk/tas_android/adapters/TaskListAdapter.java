@@ -15,6 +15,8 @@ import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -76,7 +78,8 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
         Task task = realmResults.get(position);
         holder.title.setText(task.getTitle());
         holder.description.setText(task.getDescription());
-        DateTime startDate = new DateTime(task.getStartDate());
+        LocalDate localDate = LocalDate.parse(task.getStartDate());
+        DateTime startDate = localDate.toDateTime(LocalTime.parse(task.getStartTime()));
         holder.startDate.setText(fmt.print(startDate));
         holder.creator.setText(task.getUser());
     }

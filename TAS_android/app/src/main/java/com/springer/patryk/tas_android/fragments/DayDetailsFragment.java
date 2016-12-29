@@ -69,6 +69,7 @@ public class DayDetailsFragment extends BaseFragment {
 
         RealmResults<Task> realmResults = realm
                 .where(Task.class)
+                .equalTo("startDate", currentDate.toLocalDate().toString())
                 .findAllSorted("id");
 
         adapter = new TaskListAdapter(mContext, realmResults, true, true);

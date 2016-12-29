@@ -18,7 +18,7 @@ public class Task extends RealmObject {
     private String id;
     private String title;
     private String startDate;
-
+    private String startTime;
     private String user;
     private String description;
 
@@ -64,5 +64,13 @@ public class Task extends RealmObject {
 
     public String getDescription() {
         return description;
+    }
+
+    public String getStartTime() {
+        return startTime;
+    }
+
+    public void setStartTime(String startTime) {
+        this.startTime = startTime;
     }
 }
