@@ -1,3 +1,33 @@
 <resources>
     <string name="app_name">TAS_android</string>
+    <string name="login">Login*</string>
+    <string name="email">Email*</string>
+    <string name="register_password">Password*</string>
+    <string name="confirm_password">Confirm password*</string>
+    <string name="register_confirm">Confirm</string>
+    <string name="sign_in_label">Sign in</string>
+    <string name="register_name">Name</string>
+    <string name="logout_dialog_message">Confirm logout</string>
+    <string name="logout_dialog_yes">Logout</string>
+    <string name="logout_dialog_no">Cancel</string>
+    <string name="LoginPattern">^[a-zA-Zsda0-9]{1,10}$</string>
+    <string name="PlaceholderText">Placeholder</string>
+    <string name="empty_task_list_text">No tasks today</string>
+
+    <array name="drawer_items">
+        <item>Calendar</item>
+        <item>Tasks</item>
+        <item>Meetings</item>
+        <item>About</item>
+    </array>
+
+    <array name="day_names">
+        <item>SUN</item>
+        <item>MON</item>
+        <item>TUE</item>
+        <item>WED</item>
+        <item>THU</item>
+        <item>FRI</item>
+        <item>SAT</item>
+    </array>
 </resources>
