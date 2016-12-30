@@ -19,7 +19,7 @@ public class MyApp extends Application {
     private static ApiEndpoint retrofit;
 
     public static final String BASE_URL = "http://10.0.2.2:8080/api/";
-    public static final String BASE_URL_DEVICE="http://192.168.0.10:8080/api/";
+    public static final String BASE_URL_DEVICE="http://192.168.43.52:8080/api/";
 
     @Override
     public void onCreate() {

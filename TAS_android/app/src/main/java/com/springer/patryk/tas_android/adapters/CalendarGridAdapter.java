@@ -4,6 +4,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
@@ -76,7 +77,16 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<Task, Cal
     @Override
     public ViewHolder onCreateRealmViewHolder(ViewGroup viewGroup, int i) {
         View itemView = inflater.inflate(R.layout.day_item, viewGroup, false);
+
         return new ViewHolder(itemView);
+    }
+
+
+
+    @Override
+    public void updateRealmResults(RealmResults<Task> queryResults) {
+        Log.d("Calendar", "Update");
+        super.updateRealmResults(queryResults);
     }
 
     @Override
@@ -156,10 +166,5 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<Task, Cal
         }
         return month;
     }
-
-    public void setTasks(List<Task> tasks) {
-        notifyDataSetChanged();
-    }
-
 
 }

@@ -28,15 +28,21 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/backArrow"
         android:numColumns="7" />
-
+<android.support.v4.widget.SwipeRefreshLayout
+    android:id="@+id/refreshLayout"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_below="@id/daysTitle" >
     <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
         android:id="@+id/monthView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        app:rrvIsRefreshable="false"
         app:rrvLayoutType="Grid"
         app:rrvGridLayoutSpanCount="7"
-        android:layout_below="@id/daysTitle"/>
+       />
+
+</android.support.v4.widget.SwipeRefreshLayout>
+
 
     <TextView
         android:id="@+id/monthText"

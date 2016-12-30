@@ -3,6 +3,7 @@ package com.springer.patryk.tas_android.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,7 +54,8 @@ public class CalendarFragment extends BaseFragment {
     RealmRecyclerView monthView;
     @BindView(R.id.daysTitle)
     GridView dayTitles;
-
+    @BindView(R.id.refreshLayout)
+    SwipeRefreshLayout refreshLayout;
 
     SessionManager sessionManager;
 
@@ -85,7 +87,13 @@ public class CalendarFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         dayTitles.setAdapter(calendarDayOfMonthAdapter);
         monthView.setAdapter(calendarGridAdapter);
-
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                updateTasks(userDetails.get("id"));
+                refreshLayout.setRefreshing(false);
+            }
+        });
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
