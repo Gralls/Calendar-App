@@ -8,6 +8,7 @@ import com.google.gson.annotations.SerializedName;
 
 import java.util.List;
 
+import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
@@ -21,6 +22,8 @@ public class Task extends RealmObject {
     private String startTime;
     private String user;
     private String description;
+    private RealmList<String>
+
 
     public String getId() {
         return id;

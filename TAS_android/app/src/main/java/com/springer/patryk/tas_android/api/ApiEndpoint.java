@@ -1,5 +1,6 @@
 package com.springer.patryk.tas_android.api;
 
+import com.springer.patryk.tas_android.models.Meeting;
 import com.springer.patryk.tas_android.models.Task;
 import com.springer.patryk.tas_android.models.Token;
 import com.springer.patryk.tas_android.models.User;
@@ -26,7 +27,7 @@ public interface ApiEndpoint {
     Call<User> getUser(@Path("id") String id);
 
     @GET("users")
-    Call<User> getUsers();
+    Call<List<User>> getUsers();
 
     @POST("users")
     Call<User> createUser(@Body User user);
@@ -48,4 +49,16 @@ public interface ApiEndpoint {
 
     @PATCH("tasks/{id}")
     Call<Void> editTask(@Path("id") String id, @Body Task task);
+
+    @GET("meetings")
+    Call<List<Meeting>> getMeeting(@Query("user") String userID);
+
+    @POST("meetings")
+    Call<Task> createMeeting(@Body Meeting meeting);
+
+    @DELETE("meetings/{id}")
+    Call<Void> deleteMeeting(@Path("id") String id);
+
+    @PATCH("meetings/{id}")
+    Call<Void> editMeeting(@Path("id") String id, @Body Meeting meeting);
 }

@@ -9,22 +9,24 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.springer.patryk.tas_android.R;
+import com.springer.patryk.tas_android.adapters.MeetingsListAdapter;
 import com.springer.patryk.tas_android.adapters.TaskListAdapter;
+import com.springer.patryk.tas_android.models.Meeting;
 import com.springer.patryk.tas_android.models.Task;
 
-import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
 import butterknife.BindView;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
 import io.realm.RealmResults;
+import io.realm.Sort;
 
 /**
- * Created by Patryk on 2016-12-16.
+ * Created by Patryk on 2017-01-02.
  */
 
-public class DayDetailsFragment extends BaseFragment {
+public class AllMeetingsFragment extends BaseFragment {
 
     @BindView(R.id.listOfTodaysTasks)
     RealmRecyclerView taskListView;
@@ -33,49 +35,38 @@ public class DayDetailsFragment extends BaseFragment {
 
 
     private Context mContext;
-    private DateTime currentDate;
-    private TaskListAdapter adapter;
+    private MeetingsListAdapter adapter;
 
-    private DateTimeFormatter dateTimeFormatter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
-        dateTimeFormatter= DateTimeFormat.forPattern("dd MMMM yyyy");
-
     }
 
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         taskListView.setAdapter(adapter);
-        currentDay.setText(dateTimeFormatter.print(currentDate));
+        currentDay.setText(R.string.meetings_list_label);
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tasks_list, null);
-        currentDate = (DateTime) getArguments().getSerializable("tasks");
-
-        mContext.getSharedPreferences("DayDetails",Context.MODE_PRIVATE)
-                .edit()
-                .putString("CurrentDate",currentDate.toString())
-                .apply();
 
 
-        RealmResults<Task> realmResults = realm
-                .where(Task.class)
-                .equalTo("startDate", currentDate.toLocalDate().toString())
-                .findAllSorted("startTime");
+        String[] sortFieldNames = {"startDate", "startTime"};
+        Sort[] sorts = {Sort.ASCENDING, Sort.ASCENDING};
+        RealmResults<Meeting> realmResults = realm
+                .where(Meeting.class)
+                .findAllSorted(sortFieldNames,sorts);
 
-        adapter = new TaskListAdapter(mContext, realmResults,userDetails.get("id"), true, true);
+        adapter = new MeetingsListAdapter(mContext, realmResults,userDetails.get("id"), true, true);
 
 
 
         return rootView;
     }
-
-
 }

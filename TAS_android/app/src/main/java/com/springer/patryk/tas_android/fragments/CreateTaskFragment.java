@@ -47,7 +47,6 @@ public class CreateTaskFragment extends BaseFragment {
 
     @BindView(R.id.createNewTask)
     Button createTask;
-    SessionManager sessionManager;
     private SharedPreferences sharedPreferences;
     private boolean isNewTask;
     private Task task;
@@ -55,8 +54,7 @@ public class CreateTaskFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        sessionManager = new SessionManager(getContext());
-        userDetails = sessionManager.getUserDetails();
+
     }
 
     @Override
@@ -152,7 +150,6 @@ public class CreateTaskFragment extends BaseFragment {
             @Override
             public void execute(Realm realm) {
                 task.setTitle(taskTitle.getText().toString());
-                task.setUser(sessionManager.getUserDetails().get("id"));
                 task.setDescription(taskDescription.getText().toString());
 
                 DateTime startDateTime = new DateTime(taskStartDate.getYear()

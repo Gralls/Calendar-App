@@ -75,7 +75,7 @@ public class RegisterFragment extends Fragment {
                     call.enqueue(new Callback<User>() {
                         @Override
                         public void onResponse(Call<User> call, Response<User> response) {
-                            if (response.code() == 400) {
+                            if (response.code() == 409) {
                                 Toast.makeText(mContext, "User already exists", Toast.LENGTH_LONG).show();
                             } else {
                                 Toast.makeText(mContext, "User created!", Toast.LENGTH_LONG).show();

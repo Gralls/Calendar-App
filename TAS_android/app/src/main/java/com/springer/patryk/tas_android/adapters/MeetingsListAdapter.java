@@ -1,6 +1,5 @@
 package com.springer.patryk.tas_android.adapters;
 
-
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -12,6 +11,7 @@ import android.widget.Toast;
 import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
+import com.springer.patryk.tas_android.models.Meeting;
 import com.springer.patryk.tas_android.models.Task;
 import com.springer.patryk.tas_android.models.User;
 
@@ -30,16 +30,16 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 /**
- * Created by Patryk on 2016-12-16.
+ * Created by Patryk on 2017-01-02.
  */
 
-public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskListAdapter.ViewHolder> {
-
+public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, MeetingsListAdapter.ViewHolder>
+{
     private final DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm");
     private android.support.v4.app.FragmentManager manager;
     private String userID;
 
-    public TaskListAdapter(Context context, RealmResults<Task> realmResults,String userID, boolean automaticUpdate, boolean animateResults) {
+    public MeetingsListAdapter(Context context, RealmResults<Meeting> realmResults, String userID, boolean automaticUpdate, boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
         manager = ((AppCompatActivity) context).getSupportFragmentManager();
         this.userID=userID;
@@ -52,13 +52,14 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
         TextView description;
         TextView startDate;
         TextView creator;
-
+        TextView place;
         public ViewHolder(View view) {
             super(view);
-            title = (TextView) view.findViewById(R.id.taskTitle);
-            description = (TextView) view.findViewById(R.id.taskDescription);
-            startDate = (TextView) view.findViewById(R.id.taskStartDate);
-            creator = (TextView) view.findViewById(R.id.taskCreator);
+            title = (TextView) view.findViewById(R.id.meetingTitle);
+            description = (TextView) view.findViewById(R.id.meetingDescription);
+            startDate = (TextView) view.findViewById(R.id.meetingStartDate);
+            creator = (TextView) view.findViewById(R.id.meetingCreator);
+            place = (TextView) view.findViewById(R.id.meetingPlace);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -70,7 +71,7 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
                         manager.beginTransaction().replace(R.id.mainContent, createTaskFragment, null).addToBackStack(null).commit();
                     }
                     else
-                        Toast.makeText(getContext(),"You cant edit this task",Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(),"You cant edit this meeting",Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -78,20 +79,20 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
 
 
     @Override
-    public ViewHolder onCreateRealmViewHolder(ViewGroup parent, int viewType) {
+    public MeetingsListAdapter.ViewHolder onCreateRealmViewHolder(ViewGroup parent, int viewType) {
         View itemView = inflater.inflate(R.layout.task_item, parent, false);
-        return new ViewHolder(itemView);
+        return new MeetingsListAdapter.ViewHolder(itemView);
     }
 
     @Override
-    public void onBindRealmViewHolder(ViewHolder holder, int position) {
-        Task task = realmResults.get(position);
-        holder.title.setText(task.getTitle());
-        holder.description.setText(task.getDescription());
-        LocalDate localDate = LocalDate.parse(task.getStartDate());
-        DateTime startDate = localDate.toDateTime(LocalTime.parse(task.getStartTime()));
+    public void onBindRealmViewHolder(MeetingsListAdapter.ViewHolder holder, int position) {
+        Meeting meeting = realmResults.get(position);
+        holder.title.setText(meeting.getTitle());
+        holder.description.setText(meeting.getDescription());
+        LocalDate localDate = LocalDate.parse(meeting.getStartDate());
+        DateTime startDate = localDate.toDateTime(LocalTime.parse(meeting.getStartTime()));
         holder.startDate.setText(fmt.print(startDate));
-        holder.creator.setText(task.getUser());
+        holder.creator.setText(meeting.getUser());
     }
 
     @Override

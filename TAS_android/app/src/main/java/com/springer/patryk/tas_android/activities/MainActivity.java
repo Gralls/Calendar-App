@@ -4,10 +4,13 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
@@ -18,6 +21,8 @@ import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.SessionManager;
+import com.springer.patryk.tas_android.fragments.AllMeetingsFragment;
+import com.springer.patryk.tas_android.fragments.AllTasksFragment;
 import com.springer.patryk.tas_android.fragments.CalendarFragment;
 import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
 
@@ -114,12 +119,20 @@ public class MainActivity extends AppCompatActivity  {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             selectItem(position);
+            mNavigationDrawer.closeDrawer(GravityCompat.START);
         }
 
         public void selectItem(int itemPosition) {
             switch (itemPosition) {
                 case 0:
-                    Toast.makeText(mContext, "Wybrano Tasks", Toast.LENGTH_SHORT).show();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, new CalendarFragment()).addToBackStack(null).commit();
+                    break;
+                case 1:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, new AllTasksFragment()).addToBackStack(null).commit();
+                    break;
+                case 2:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, new AllMeetingsFragment()).addToBackStack(null).commit();
+                    break;
             }
         }
     }
