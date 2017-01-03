@@ -7,6 +7,7 @@ import com.springer.patryk.tas_android.api.ApiEndpoint;
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -32,7 +33,12 @@ public class MyApp extends Application {
                 .create(ApiEndpoint.class);
 
         Realm.init(this);
-
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("tas.realm")
+                .schemaVersion(1)
+                .deleteRealmIfMigrationNeeded() // todo remove for production
+                .build();
+        Realm.setDefaultConfiguration(config);
     }
 
     public static ApiEndpoint getApiService() {

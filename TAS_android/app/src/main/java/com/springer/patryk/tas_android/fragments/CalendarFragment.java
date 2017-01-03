@@ -15,8 +15,6 @@ import android.widget.TextView;
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.adapters.CalendarDayOfMonthAdapter;
 import com.springer.patryk.tas_android.adapters.CalendarGridAdapter;
-import com.springer.patryk.tas_android.models.Task;
-import com.springer.patryk.tas_android.models.User;
 import com.springer.patryk.tas_android.models.UserState;
 
 import net.danlew.android.joda.DateUtils;
@@ -63,7 +61,7 @@ public class CalendarFragment extends BaseFragment {
 
         dateNow = DateTime.now();
 
-        updateTasks(userDetails.get("id"));
+        syncWithServer(userDetails.get("id"));
         final RealmResults<UserState> realmResults = realm.where(UserState.class).findAll();
         realmResults.addChangeListener(new RealmChangeListener<RealmResults<UserState>>() {
             @Override
@@ -85,7 +83,7 @@ public class CalendarFragment extends BaseFragment {
         refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                updateTasks(userDetails.get("id"));
+                syncWithServer(userDetails.get("id"));
                 refreshLayout.setRefreshing(false);
             }
         });

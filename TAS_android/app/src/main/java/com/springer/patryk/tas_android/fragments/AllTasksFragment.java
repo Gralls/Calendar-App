@@ -14,6 +14,7 @@ import com.springer.patryk.tas_android.adapters.TaskListAdapter;
 import com.springer.patryk.tas_android.models.Task;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
@@ -29,21 +30,32 @@ import io.realm.Sort;
 public class AllTasksFragment extends BaseFragment {
     @BindView(R.id.listOfTodaysTasks)
     RealmRecyclerView taskListView;
-    @BindView(R.id.currentDay)
+    @BindView(R.id.allTaskLabel)
     TextView currentDay;
 
 
     private Context mContext;
     private TaskListAdapter adapter;
+    private RealmResults<Task>realmResults;
 
-    private DateTimeFormatter dateTimeFormatter;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
-        dateTimeFormatter= DateTimeFormat.forPattern("dd MMMM yyyy");
-
+        String[] sortFieldNames = {"startDate", "startTime"};
+        Sort[] sorts = {Sort.ASCENDING, Sort.ASCENDING};
+        if (getArguments() == null) {
+            realmResults = realm
+                    .where(Task.class).findAllSorted(sortFieldNames,sorts);
+        }else{
+            String date = (String) getArguments().getSerializable("TaskDate");
+            realmResults = realm
+                    .where(Task.class)
+                    .equalTo("startDate", date)
+                    .findAllSorted(sortFieldNames, sorts);
+        }
+        adapter = new TaskListAdapter(mContext, realmResults,userDetails.get("id"), true, true);
     }
 
     @Override
@@ -57,15 +69,6 @@ public class AllTasksFragment extends BaseFragment {
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.tasks_list, null);
-
-
-        String[] sortFieldNames = {"startDate", "startTime"};
-        Sort[] sorts = {Sort.ASCENDING, Sort.ASCENDING};
-        RealmResults<Task> realmResults = realm
-                .where(Task.class)
-                .findAllSorted(sortFieldNames,sorts);
-
-        adapter = new TaskListAdapter(mContext, realmResults,userDetails.get("id"), true, true);
 
 
 

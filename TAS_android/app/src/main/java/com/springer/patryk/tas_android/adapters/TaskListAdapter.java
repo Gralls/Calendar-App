@@ -52,13 +52,14 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
         TextView description;
         TextView startDate;
         TextView creator;
-
+        TextView guests;
         public ViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.taskTitle);
             description = (TextView) view.findViewById(R.id.taskDescription);
             startDate = (TextView) view.findViewById(R.id.taskStartDate);
             creator = (TextView) view.findViewById(R.id.taskCreator);
+            guests = (TextView) view.findViewById(R.id.taskGuests);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {

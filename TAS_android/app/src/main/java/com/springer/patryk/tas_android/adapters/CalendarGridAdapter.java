@@ -45,7 +45,6 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<UserState
     }
 
 
-
     public class ViewHolder extends RealmViewHolder {
         TextView dayNumber;
         TextView dayTask;
@@ -98,15 +97,14 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<UserState
             if (taskAtCurrentDay > 0) {
                 holder.dayTask.setVisibility(View.VISIBLE);
                 holder.dayTask.setText(String.valueOf(taskAtCurrentDay));
-            }
-            else if (meetingAtCurrentDay>0){
+            } else
+                holder.dayTask.setVisibility(View.INVISIBLE);
+            if (meetingAtCurrentDay > 0) {
                 holder.dayMeeting.setVisibility(View.VISIBLE);
                 holder.dayMeeting.setText(String.valueOf(meetingAtCurrentDay));
-            }
-            else {
-                holder.dayTask.setVisibility(View.INVISIBLE);
+            } else
                 holder.dayMeeting.setVisibility(View.INVISIBLE);
-            }
+
             if (date.toLocalDate().equals(currentDay.toLocalDate())) {
                 holder.day.setBackgroundResource(R.drawable.today_background);
             } else {
@@ -117,7 +115,7 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<UserState
 
     public int tasksCountOnPosition(DateTime currentDate) {
         int taskCounter = 0;
-        if(realmResults.size()>0) {
+        if (realmResults.size() > 0) {
             UserState userState = realmResults.first();
             for (Task task : userState.getTask()) {
                 LocalDate localDate = LocalDate.parse(task.getStartDate());
@@ -131,7 +129,7 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<UserState
 
     public int meetingsCountOnPosition(DateTime currentDate) {
         int meetingCounter = 0;
-        if(realmResults.size()>0) {
+        if (realmResults.size() > 0) {
             UserState userState = realmResults.first();
             for (Meeting meeting : userState.getMeeting()) {
                 LocalDate localDate = LocalDate.parse(meeting.getStartDate());

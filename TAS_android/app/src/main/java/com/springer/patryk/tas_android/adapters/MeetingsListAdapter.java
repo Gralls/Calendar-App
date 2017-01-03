@@ -79,13 +79,13 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
 
 
     @Override
-    public MeetingsListAdapter.ViewHolder onCreateRealmViewHolder(ViewGroup parent, int viewType) {
-        View itemView = inflater.inflate(R.layout.task_item, parent, false);
-        return new MeetingsListAdapter.ViewHolder(itemView);
+    public ViewHolder onCreateRealmViewHolder(ViewGroup viewGroup, int i) {
+        View itemView = inflater.inflate(R.layout.meeting_item, viewGroup, false);
+        return new ViewHolder(itemView);
     }
 
     @Override
-    public void onBindRealmViewHolder(MeetingsListAdapter.ViewHolder holder, int position) {
+    public void onBindRealmViewHolder(ViewHolder holder, int position) {
         Meeting meeting = realmResults.get(position);
         holder.title.setText(meeting.getTitle());
         holder.description.setText(meeting.getDescription());
@@ -93,7 +93,9 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
         DateTime startDate = localDate.toDateTime(LocalTime.parse(meeting.getStartTime()));
         holder.startDate.setText(fmt.print(startDate));
         holder.creator.setText(meeting.getUser());
+        holder.place.setText(meeting.getPlace());
     }
+
 
     @Override
     public long getItemId(int i) {
@@ -110,7 +112,7 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
     @Override
     public void onItemSwipedDismiss(int position) {
         if(realmResults.get(position).getUser().equals(userID)) {
-            deleteTaskFromDB(position);
+           // deleteTaskFromDB(position);
             super.onItemSwipedDismiss(position);
         }else{
             removeFromGuests(position);

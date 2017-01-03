@@ -22,7 +22,7 @@ public class Task extends RealmObject {
     private String startTime;
     private String user;
     private String description;
-    private RealmList<String>
+
 
 
     public String getId() {
@@ -57,10 +57,6 @@ public class Task extends RealmObject {
         this.user = user;
     }
 
-    public void setGuests(List<String> guests) {
-        List<String> guests1 = guests;
-    }
-
     public void setDescription(String description) {
         this.description = description;
     }
@@ -76,4 +72,6 @@ public class Task extends RealmObject {
     public void setStartTime(String startTime) {
         this.startTime = startTime;
     }
+
+
 }

@@ -19,6 +19,7 @@ import org.joda.time.format.DateTimeFormatter;
 
 import butterknife.BindView;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+import io.realm.Realm;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -28,20 +29,34 @@ import io.realm.Sort;
 
 public class AllMeetingsFragment extends BaseFragment {
 
-    @BindView(R.id.listOfTodaysTasks)
+    @BindView(R.id.listOfMeetings)
     RealmRecyclerView taskListView;
-    @BindView(R.id.currentDay)
+    @BindView(R.id.allMeetingsLabel)
     TextView currentDay;
 
 
     private Context mContext;
     private MeetingsListAdapter adapter;
-
+    private RealmResults<Meeting>realmResults;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
+        String[] sortFieldNames = {"startDate", "startTime"};
+        Sort[] sorts = {Sort.ASCENDING, Sort.ASCENDING};
+        if (getArguments() == null) {
+            realmResults=realm
+                    .where(Meeting.class)
+                    .findAllSorted(sortFieldNames,sorts);
+        }else {
+            String date = (String) getArguments().getSerializable("MeetingDate");
+            realmResults=realm
+                    .where(Meeting.class)
+                    .equalTo("startDate",date)
+                    .findAllSorted(sortFieldNames,sorts);
+        }
+        adapter = new MeetingsListAdapter(mContext, realmResults,userDetails.get("id"), true, true);
     }
 
     @Override
@@ -54,19 +69,9 @@ public class AllMeetingsFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.tasks_list, null);
-
-
-        String[] sortFieldNames = {"startDate", "startTime"};
-        Sort[] sorts = {Sort.ASCENDING, Sort.ASCENDING};
-        RealmResults<Meeting> realmResults = realm
-                .where(Meeting.class)
-                .findAllSorted(sortFieldNames,sorts);
-
-        adapter = new MeetingsListAdapter(mContext, realmResults,userDetails.get("id"), true, true);
-
-
+        View rootView = inflater.inflate(R.layout.meetings_list, null);
 
         return rootView;
     }
+
 }

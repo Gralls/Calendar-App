@@ -13,26 +13,25 @@ import io.realm.annotations.PrimaryKey;
 public class Meeting extends RealmObject {
 
     @SerializedName("_id")
-    @Expose
     @PrimaryKey
     private String id;
+
     @SerializedName("title")
-    @Expose
     private String title;
+
     @SerializedName("startDate")
-    @Expose
     private String startDate;
+
     @SerializedName("startTime")
-    @Expose
     private String startTime;
+
     @SerializedName("place")
-    @Expose
     private String place;
+
     @SerializedName("description")
-    @Expose
     private String description;
+
     @SerializedName("user")
-    @Expose
     private String user;
 
     public String getId() {

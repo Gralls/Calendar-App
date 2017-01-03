@@ -15,7 +15,6 @@ import android.widget.Toast;
 
 import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
-import com.springer.patryk.tas_android.SessionManager;
 import com.springer.patryk.tas_android.activities.MainActivity;
 import com.springer.patryk.tas_android.models.Task;
 
@@ -124,7 +123,7 @@ public class CreateTaskFragment extends BaseFragment {
             @Override
             public void onResponse(Call<Task> call, Response<Task> response) {
                 Toast.makeText(getContext(), "Task created", Toast.LENGTH_SHORT).show();
-                updateTasks(userDetails.get("id"));
+                syncWithServer(userDetails.get("id"));
                 getFragmentManager().popBackStack();
             }
 
