@@ -13,13 +13,10 @@ import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.SessionManager;
 import com.springer.patryk.tas_android.models.Meeting;
 import com.springer.patryk.tas_android.models.Task;
-import com.springer.patryk.tas_android.models.User;
 import com.springer.patryk.tas_android.models.UserState;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.UUID;
 
 import butterknife.ButterKnife;
 import io.realm.Realm;
@@ -76,8 +73,8 @@ public class BaseFragment extends Fragment {
             public void onResponse(Call<List<Task>> call, final Response<List<Task>> response) {
                 final String[] ids = new String[response.body().size() > 0 ? response.body().size() : 1];
                 if (response.body().size() > 0) {
-                    for (Task task :
-                            response.body()) {
+                    Log.d("BaseFragment", response.body().toString());
+                    for (Task task : response.body()) {
                         ids[response.body().indexOf(task)] = task.getId();
                     }
                 } else
@@ -91,15 +88,18 @@ public class BaseFragment extends Fragment {
                     }
                 });
                 updateMeetings(userID);
+
             }
 
             @Override
             public void onFailure(Call<List<Task>> call, Throwable t) {
-                Toast.makeText(getContext(), "Check internet connection", Toast.LENGTH_SHORT).show();
+                Log.d("Task", t.getMessage());
+                showToast("Check internet connection");
             }
         });
 
     }
+
 
     public void updateMeetings(final String userID) {
         Call<List<Meeting>> meetings = MyApp.getApiService().getMeeting(userID);
@@ -141,11 +141,14 @@ public class BaseFragment extends Fragment {
 
             @Override
             public void onFailure(Call<List<Meeting>> call, Throwable t) {
-                Toast.makeText(getContext(), "Check internet connection", Toast.LENGTH_SHORT).show();
+                showToast("Check internet connection");
             }
         });
 
     }
 
+    public void showToast(String message) {
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+    }
 
 }

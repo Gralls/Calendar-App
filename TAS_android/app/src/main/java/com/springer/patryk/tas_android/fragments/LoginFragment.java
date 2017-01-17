@@ -51,7 +51,6 @@ public class LoginFragment extends Fragment {
         ButterKnife.bind(this, rootView);
         sessionManager = new SessionManager(mContext);
 
-
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {

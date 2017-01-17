@@ -4,26 +4,24 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.FragmentManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.View;
 import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.SessionManager;
 import com.springer.patryk.tas_android.fragments.AllMeetingsFragment;
 import com.springer.patryk.tas_android.fragments.AllTasksFragment;
 import com.springer.patryk.tas_android.fragments.CalendarFragment;
+import com.springer.patryk.tas_android.fragments.CreateMeetingFragment;
 import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
 
 import butterknife.BindArray;
@@ -84,6 +82,16 @@ public class MainActivity extends AppCompatActivity  {
                 getSupportFragmentManager()
                         .beginTransaction()
                         .replace(R.id.mainContent,new CreateTaskFragment(),null)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+        meetingFabLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.mainContent, new CreateMeetingFragment(), null)
                         .addToBackStack(null)
                         .commit();
             }

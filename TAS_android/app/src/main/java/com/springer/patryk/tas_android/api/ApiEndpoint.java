@@ -27,15 +27,15 @@ public interface ApiEndpoint {
     Call<User> getUser(@Path("id") String id);
 
     @GET("users")
-    Call<List<User>> getUsers();
+    Call<List<User>> getUsers(@Query("login") String... login);
 
     @POST("users")
-    Call<User> createUser(@Body User user);
+    Call<Void> createUser(@Body User user);
 
-    @POST("auth")
+    @POST("authorize-user")
     Call<Token> login(@Body User user);
 
-    @GET("checkauth")
+    @GET("check-user-authorization")
     Call<User> getUserDetails(@Header("Authorization") String token);
 
     @GET("tasks")
@@ -54,7 +54,7 @@ public interface ApiEndpoint {
     Call<List<Meeting>> getMeeting(@Query("user") String userID);
 
     @POST("meetings")
-    Call<Task> createMeeting(@Body Meeting meeting);
+    Call<Void> createMeeting(@Body Meeting meeting);
 
     @DELETE("meetings/{id}")
     Call<Void> deleteMeeting(@Path("id") String id);

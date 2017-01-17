@@ -1,22 +1,15 @@
 package com.springer.patryk.tas_android.fragments;
 
-import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.adapters.TaskListAdapter;
 import com.springer.patryk.tas_android.models.Task;
-
-import org.joda.time.DateTime;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import butterknife.BindView;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
@@ -34,17 +27,16 @@ public class AllTasksFragment extends BaseFragment {
     TextView currentDay;
 
 
-    private Context mContext;
     private TaskListAdapter adapter;
-    private RealmResults<Task>realmResults;
 
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext = getContext();
+
         String[] sortFieldNames = {"startDate", "startTime"};
         Sort[] sorts = {Sort.ASCENDING, Sort.ASCENDING};
+        RealmResults<Task> realmResults;
         if (getArguments() == null) {
             realmResults = realm
                     .where(Task.class).findAllSorted(sortFieldNames,sorts);
@@ -55,7 +47,7 @@ public class AllTasksFragment extends BaseFragment {
                     .equalTo("startDate", date)
                     .findAllSorted(sortFieldNames, sorts);
         }
-        adapter = new TaskListAdapter(mContext, realmResults,userDetails.get("id"), true, true);
+        adapter = new TaskListAdapter(getContext(), realmResults, userDetails.get("id"), true, true);
     }
 
     @Override
@@ -68,10 +60,6 @@ public class AllTasksFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.tasks_list, null);
-
-
-
-        return rootView;
+        return inflater.inflate(R.layout.tasks_list, null);
     }
 }

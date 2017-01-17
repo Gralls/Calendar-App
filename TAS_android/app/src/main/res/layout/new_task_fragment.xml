@@ -63,11 +63,18 @@
             android:scaleY="0.7"
             android:timePickerMode="spinner" />
 
+        <EditText
+            android:id="@+id/newTaskGuests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/newTaskStartDate"
+            android:hint="Insert a guests" />
+
         <Button
             android:id="@+id/createNewTask"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/newTaskStartTime"
+            android:layout_below="@id/newTaskGuests"
             android:text="SUBMIT" />
 
     </RelativeLayout>

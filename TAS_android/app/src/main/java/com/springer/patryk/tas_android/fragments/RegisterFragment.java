@@ -36,7 +36,6 @@ public class RegisterFragment extends Fragment {
     public static final String LOG_TAG = RegisterFragment.class.getSimpleName();
 
     private Context mContext;
-    private boolean registerProceeded = false;
     private SessionManager sessionManager;
     @BindView(R.id.registerEmail)
     EditText registerEmail;
@@ -60,7 +59,6 @@ public class RegisterFragment extends Fragment {
         mContext = getContext();
         ButterKnife.bind(this, rootView);
         sessionManager = new SessionManager(mContext);
-        final Intent intent = new Intent(mContext, MainActivity.class);
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -71,10 +69,10 @@ public class RegisterFragment extends Fragment {
                     user.setPassword(registerPassword.getText().toString());
                     user.setName(registerName.getText().toString());
 
-                    Call<User> call = MyApp.getApiService().createUser(user);
-                    call.enqueue(new Callback<User>() {
+                    Call<Void> call = MyApp.getApiService().createUser(user);
+                    call.enqueue(new Callback<Void>() {
                         @Override
-                        public void onResponse(Call<User> call, Response<User> response) {
+                        public void onResponse(Call<Void> call, Response<Void> response) {
                             if (response.code() == 409) {
                                 Toast.makeText(mContext, "User already exists", Toast.LENGTH_LONG).show();
                             } else {
@@ -85,7 +83,7 @@ public class RegisterFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<User> call, Throwable t) {
+                        public void onFailure(Call<Void> call, Throwable t) {
                             Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });

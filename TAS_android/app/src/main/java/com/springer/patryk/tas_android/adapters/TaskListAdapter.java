@@ -12,8 +12,8 @@ import android.widget.Toast;
 import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
+import com.springer.patryk.tas_android.models.Guest;
 import com.springer.patryk.tas_android.models.Task;
-import com.springer.patryk.tas_android.models.User;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -21,7 +21,6 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
@@ -93,6 +92,16 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
         DateTime startDate = localDate.toDateTime(LocalTime.parse(task.getStartTime()));
         holder.startDate.setText(fmt.print(startDate));
         holder.creator.setText(task.getUser());
+        String guests = "";
+        for (Guest guest :
+                task.getGuests()) {
+            guests = guests + guest.getLogin() + " - " + guest.getFlag() + '\n';
+        }
+        if (guests.length() > 0) {
+            guests = guests.substring(0, guests.length() - 1);
+        }
+
+        holder.guests.setText(guests);
     }
 
     @Override

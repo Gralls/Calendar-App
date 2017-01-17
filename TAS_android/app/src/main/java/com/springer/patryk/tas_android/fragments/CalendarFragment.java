@@ -32,10 +32,6 @@ import io.realm.RealmResults;
 
 public class CalendarFragment extends BaseFragment {
 
-    private Context mContext;
-    private static final String LOG_TAG = CalendarFragment.class.getSimpleName();
-
-
     @BindView(R.id.backArrow)
     ImageView backArrow;
     @BindView(R.id.nextArrow)
@@ -49,19 +45,20 @@ public class CalendarFragment extends BaseFragment {
     @BindView(R.id.refreshLayout)
     SwipeRefreshLayout refreshLayout;
 
-
-
+    private Context mContext;
+    private static final String LOG_TAG = CalendarFragment.class.getSimpleName();
     private DateTime dateNow;
     private CalendarGridAdapter calendarGridAdapter;
     private CalendarDayOfMonthAdapter calendarDayOfMonthAdapter;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
-
         dateNow = DateTime.now();
 
         syncWithServer(userDetails.get("id"));
+
         final RealmResults<UserState> realmResults = realm.where(UserState.class).findAll();
         realmResults.addChangeListener(new RealmChangeListener<RealmResults<UserState>>() {
             @Override
@@ -70,7 +67,7 @@ public class CalendarFragment extends BaseFragment {
             }
         });
 
-        calendarGridAdapter = new CalendarGridAdapter(getActivity(), dateNow, realmResults, true, true);
+        calendarGridAdapter = new CalendarGridAdapter(mContext, dateNow, realmResults, true, true);
         calendarDayOfMonthAdapter = new CalendarDayOfMonthAdapter(mContext, getResources().getStringArray(R.array.day_names));
     }
 
@@ -133,7 +130,5 @@ public class CalendarFragment extends BaseFragment {
         dateNow = dateNow.plusMonths(1);
         updateDate();
     }
-
-
 
 }

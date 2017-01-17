@@ -10,10 +10,9 @@ import android.widget.Toast;
 
 import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
-import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
+import com.springer.patryk.tas_android.fragments.CreateMeetingFragment;
+import com.springer.patryk.tas_android.models.Guest;
 import com.springer.patryk.tas_android.models.Meeting;
-import com.springer.patryk.tas_android.models.Task;
-import com.springer.patryk.tas_android.models.User;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -21,7 +20,6 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
-import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
 import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
@@ -33,8 +31,7 @@ import retrofit2.Response;
  * Created by Patryk on 2017-01-02.
  */
 
-public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, MeetingsListAdapter.ViewHolder>
-{
+public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, MeetingsListAdapter.ViewHolder> {
     private final DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm");
     private android.support.v4.app.FragmentManager manager;
     private String userID;
@@ -42,9 +39,8 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
     public MeetingsListAdapter(Context context, RealmResults<Meeting> realmResults, String userID, boolean automaticUpdate, boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
         manager = ((AppCompatActivity) context).getSupportFragmentManager();
-        this.userID=userID;
+        this.userID = userID;
     }
-
 
 
     public class ViewHolder extends RealmViewHolder {
@@ -53,6 +49,8 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
         TextView startDate;
         TextView creator;
         TextView place;
+        TextView guests;
+
         public ViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.meetingTitle);
@@ -60,18 +58,18 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
             startDate = (TextView) view.findViewById(R.id.meetingStartDate);
             creator = (TextView) view.findViewById(R.id.meetingCreator);
             place = (TextView) view.findViewById(R.id.meetingPlace);
+            guests = (TextView) view.findViewById(R.id.meetingGuest);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(userID.equals(realmResults.get(getAdapterPosition()).getUser())) {
+                    if (userID.equals(realmResults.get(getAdapterPosition()).getUser())) {
                         Bundle args = new Bundle();
-                        args.putSerializable("Task", realmResults.get(getAdapterPosition()).getId());
-                        CreateTaskFragment createTaskFragment = new CreateTaskFragment();
-                        createTaskFragment.setArguments(args);
-                        manager.beginTransaction().replace(R.id.mainContent, createTaskFragment, null).addToBackStack(null).commit();
-                    }
-                    else
-                        Toast.makeText(getContext(),"You cant edit this meeting",Toast.LENGTH_SHORT).show();
+                        args.putSerializable("Meeting", realmResults.get(getAdapterPosition()).getId());
+                        CreateMeetingFragment createMeetingFragment = new CreateMeetingFragment();
+                        createMeetingFragment.setArguments(args);
+                        manager.beginTransaction().replace(R.id.mainContent, createMeetingFragment, null).addToBackStack(null).commit();
+                    } else
+                        Toast.makeText(getContext(), "You cant edit this meeting", Toast.LENGTH_SHORT).show();
                 }
             });
         }
@@ -94,6 +92,15 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
         holder.startDate.setText(fmt.print(startDate));
         holder.creator.setText(meeting.getUser());
         holder.place.setText(meeting.getPlace());
+        String guests = "";
+        for (Guest guest :
+                meeting.getGuests()) {
+            guests = guests + guest.getLogin() + " - " + guest.getFlag() + '\n';
+        }
+        if (guests.length() > 0) {
+            guests = guests.substring(0, guests.length() - 1);
+        }
+        holder.guests.setText(guests);
     }
 
 
@@ -111,20 +118,20 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
 
     @Override
     public void onItemSwipedDismiss(int position) {
-        if(realmResults.get(position).getUser().equals(userID)) {
-           // deleteTaskFromDB(position);
+        if (realmResults.get(position).getUser().equals(userID)) {
+            deleteMeetingFromDB(position);
             super.onItemSwipedDismiss(position);
-        }else{
+        } else {
             removeFromGuests(position);
         }
     }
 
-    public void deleteTaskFromDB(int position) {
-        Call<Void> call = MyApp.getApiService().deleteTask(realmResults.get(position).getId());
+    public void deleteMeetingFromDB(int position) {
+        Call<Void> call = MyApp.getApiService().deleteMeeting(realmResults.get(position).getId());
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(getContext(), "Task deleted", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getContext(), "Meeting deleted", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -134,7 +141,7 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
         });
     }
 
-    public void removeFromGuests(int position){
+    public void removeFromGuests(int position) {
 
     }
 

@@ -6,8 +6,6 @@ package com.springer.patryk.tas_android.models;
 
 import com.google.gson.annotations.SerializedName;
 
-import java.util.List;
-
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
@@ -17,12 +15,18 @@ public class Task extends RealmObject {
     @PrimaryKey
     @SerializedName("_id")
     private String id;
+    @SerializedName("title")
     private String title;
+    @SerializedName("startDate")
     private String startDate;
+    @SerializedName("startTime")
     private String startTime;
+    @SerializedName("user")
     private String user;
+    @SerializedName("description")
     private String description;
-
+    @SerializedName("guests")
+    private RealmList<Guest> guests;
 
 
     public String getId() {
@@ -74,4 +78,11 @@ public class Task extends RealmObject {
     }
 
 
+    public RealmList<Guest> getGuests() {
+        return guests;
+    }
+
+    public void setGuests(RealmList<Guest> guests) {
+        this.guests = guests;
+    }
 }

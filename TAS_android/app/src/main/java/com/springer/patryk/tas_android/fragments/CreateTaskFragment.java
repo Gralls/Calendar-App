@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,15 +17,20 @@ import android.widget.Toast;
 import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.activities.MainActivity;
+import com.springer.patryk.tas_android.models.Guest;
 import com.springer.patryk.tas_android.models.Task;
+import com.springer.patryk.tas_android.models.User;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
 import org.joda.time.LocalTime;
 import org.joda.time.format.ISODateTimeFormat;
 
+import java.util.List;
+
 import butterknife.BindView;
 import io.realm.Realm;
+import io.realm.RealmList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -43,7 +49,8 @@ public class CreateTaskFragment extends BaseFragment {
     DatePicker taskStartDate;
     @BindView(R.id.newTaskStartTime)
     TimePicker taskStartTime;
-
+    @BindView(R.id.newTaskGuests)
+    EditText taskGuests;
     @BindView(R.id.createNewTask)
     Button createTask;
     private SharedPreferences sharedPreferences;
@@ -51,14 +58,8 @@ public class CreateTaskFragment extends BaseFragment {
     private Task task;
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
-    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View rootView = inflater.inflate(R.layout.new_task_dialog, null);
+        View rootView = inflater.inflate(R.layout.new_task_fragment, null);
 
         sharedPreferences = getContext()
                 .getSharedPreferences("DayDetails", Context.MODE_PRIVATE);
@@ -94,7 +95,7 @@ public class CreateTaskFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 if (isNewTask)
-                    createTask();
+                    initTask();
                 else
                     editTask();
             }
@@ -102,7 +103,7 @@ public class CreateTaskFragment extends BaseFragment {
 
     }
 
-    public void createTask() {
+    public void initTask() {
         task = new Task();
         task.setTitle(taskTitle.getText().toString());
         task.setUser(sessionManager.getUserDetails().get("id"));
@@ -117,22 +118,53 @@ public class CreateTaskFragment extends BaseFragment {
                 , 0);
         task.setStartDate(startDateTime.toLocalDate().toString());
         task.setStartTime(startDateTime.toLocalTime().toString());
+        task.setGuests(convertInputGuests(taskGuests.getText().toString()));
+    }
 
-        Call<Task> call = MyApp.getApiService().createTask(task);
-        call.enqueue(new Callback<Task>() {
+    public RealmList<Guest> convertInputGuests(String input) {
+        String[] splitedGuests = input.split(",");
+        final RealmList<Guest> guests = new RealmList<>();
+        Call<List<User>> call = MyApp.getApiService().getUsers(splitedGuests);
+        call.enqueue(new Callback<List<User>>() {
+            @Override
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                for (User user : response.body()) {
+                    Guest guest = new Guest();
+                    guest.setFlag("pending");
+                    guest.setId(user.getId());
+                    guest.setLogin(user.getLogin());
+                    guests.add(guest);
+                }
+                createTask();
+            }
+
+            @Override
+            public void onFailure(Call<List<User>> call, Throwable t) {
+                Log.d("CreateTask", t.getMessage());
+                showToast("Check internet connection");
+            }
+        });
+        return guests;
+    }
+
+    public void createTask() {
+        Call<Task> createTask = MyApp.getApiService().createTask(task);
+        createTask.enqueue(new Callback<Task>() {
             @Override
             public void onResponse(Call<Task> call, Response<Task> response) {
-                Toast.makeText(getContext(), "Task created", Toast.LENGTH_SHORT).show();
+                showToast("Task created");
                 syncWithServer(userDetails.get("id"));
                 getFragmentManager().popBackStack();
             }
 
             @Override
             public void onFailure(Call<Task> call, Throwable t) {
-
+                Log.d("CreateTask", t.getMessage());
+                showToast("Check internet connection");
             }
         });
     }
+
 
     public void setTaskDetails() {
         taskTitle.setText(task.getTitle());
