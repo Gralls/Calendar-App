@@ -20,6 +20,7 @@ import com.springer.patryk.tas_android.activities.MainActivity;
 import com.springer.patryk.tas_android.models.Guest;
 import com.springer.patryk.tas_android.models.Task;
 import com.springer.patryk.tas_android.models.User;
+import com.springer.patryk.tas_android.utils.InputUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -94,13 +95,24 @@ public class CreateTaskFragment extends BaseFragment {
         createTask.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (isNewTask)
-                    initTask();
-                else
-                    editTask();
+                if (checkInput()) {
+                    if (isNewTask)
+                        initTask();
+                    else
+                        editTask();
+                }
             }
         });
 
+    }
+
+    public boolean checkInput() {
+        boolean validateStatus = true;
+        if (InputUtils.checkIsEmpty(taskTitle.getText().toString())) {
+            validateStatus = false;
+            taskTitle.setError("Title is required");
+        }
+        return validateStatus;
     }
 
     public void initTask() {
@@ -122,18 +134,23 @@ public class CreateTaskFragment extends BaseFragment {
     }
 
     public RealmList<Guest> convertInputGuests(String input) {
-        String[] splitedGuests = input.split(",");
+        final String[] splitedGuests = input.split(",");
+        for(int i=0;i<splitedGuests.length;i++) {
+            splitedGuests[i] = splitedGuests[i].trim();
+        }
         final RealmList<Guest> guests = new RealmList<>();
-        Call<List<User>> call = MyApp.getApiService().getUsers(splitedGuests);
+        Call<List<User>> call = MyApp.getApiService().getUsers(sessionManager.getToken(), splitedGuests);
         call.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                for (User user : response.body()) {
-                    Guest guest = new Guest();
-                    guest.setFlag("pending");
-                    guest.setId(user.getId());
-                    guest.setLogin(user.getLogin());
-                    guests.add(guest);
+                if (!splitedGuests[0].equals("")) {
+                    for (User user : response.body()) {
+                        Guest guest = new Guest();
+                        guest.setFlag("pending");
+                        guest.setId(user.getId());
+                        guest.setLogin(user.getLogin());
+                        guests.add(guest);
+                    }
                 }
                 createTask();
             }
@@ -144,11 +161,14 @@ public class CreateTaskFragment extends BaseFragment {
                 showToast("Check internet connection");
             }
         });
+
+
         return guests;
     }
 
     public void createTask() {
-        Call<Task> createTask = MyApp.getApiService().createTask(task);
+        Call<Task> createTask = MyApp.getApiService().createTask(sessionManager.getToken(), task);
+        Log.d("CreateTask", "Task: " + task.getGuests().size());
         createTask.enqueue(new Callback<Task>() {
             @Override
             public void onResponse(Call<Task> call, Response<Task> response) {
@@ -196,7 +216,7 @@ public class CreateTaskFragment extends BaseFragment {
             }
         });
         Task taskToUpdate = realm.copyFromRealm(task);
-        Call<Void> call = MyApp.getApiService().editTask(taskToUpdate.getId(), taskToUpdate);
+        Call<Void> call = MyApp.getApiService().editTask(sessionManager.getToken(), taskToUpdate.getId(), taskToUpdate);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

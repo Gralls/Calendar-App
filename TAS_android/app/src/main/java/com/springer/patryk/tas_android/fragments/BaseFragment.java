@@ -66,7 +66,7 @@ public class BaseFragment extends Fragment {
     }
 
     public void updateTasks(final String userID) {
-        Call<List<Task>> tasks = MyApp.getApiService().getTasks(userID);
+        Call<List<Task>> tasks = MyApp.getApiService().getTasks(sessionManager.getToken(),userID);
 
         tasks.enqueue(new Callback<List<Task>>() {
             @Override
@@ -102,11 +102,12 @@ public class BaseFragment extends Fragment {
 
 
     public void updateMeetings(final String userID) {
-        Call<List<Meeting>> meetings = MyApp.getApiService().getMeeting(userID);
+        Call<List<Meeting>> meetings = MyApp.getApiService().getMeeting(sessionManager.getToken(),userID);
 
         meetings.enqueue(new Callback<List<Meeting>>() {
             @Override
             public void onResponse(Call<List<Meeting>> call, final Response<List<Meeting>> response) {
+                Log.d("Meetings", response.code() + response.message());
                 final String[] ids = new String[response.body().size() > 0 ? response.body().size() : 1];
                 if (response.body().size() > 0) {
                     for (Meeting meeting :

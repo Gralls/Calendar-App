@@ -48,7 +48,7 @@ public class AllMeetingsFragment extends BaseFragment {
                     .equalTo("startDate",date)
                     .findAllSorted(sortFieldNames,sorts);
         }
-        adapter = new MeetingsListAdapter(getContext(), realmResults, userDetails.get("id"), true, true);
+        adapter = new MeetingsListAdapter(getContext(), realmResults, userDetails.get("id"),sessionManager.getToken(), true, true);
     }
 
     private boolean checkIsDayDetails() {

@@ -27,38 +27,38 @@ public interface ApiEndpoint {
     Call<User> getUser(@Path("id") String id);
 
     @GET("users")
-    Call<List<User>> getUsers(@Query("login") String... login);
+    Call<List<User>> getUsers(@Header("Authorization") String token,@Query("login") String... login);
 
-    @POST("users")
-    Call<Void> createUser(@Body User user);
+    @POST("create-user")
+    Call<User> createUser(@Body User user);
 
     @POST("authorize-user")
-    Call<Token> login(@Body User user);
+    Call<String> login(@Body User user);
 
-    @GET("check-user-authorization")
-    Call<User> getUserDetails(@Header("Authorization") String token);
+    /*@GET("check-user-authorization")
+    Call<User> getUserDetails(@Header("Authorization") String token);*/
 
     @GET("tasks")
-    Call<List<Task>> getTasks(@Query("user") String userID);
+    Call<List<Task>> getTasks(@Header("Authorization") String token,@Query("user") String userID);
 
     @POST("tasks")
-    Call<Task> createTask(@Body Task task);
+    Call<Task> createTask(@Header("Authorization") String token,@Body Task task);
 
     @DELETE("tasks/{id}")
-    Call<Void> deleteTask(@Path("id") String id);
+    Call<Void> deleteTask(@Header("Authorization") String token,@Path("id") String id);
 
     @PATCH("tasks/{id}")
-    Call<Void> editTask(@Path("id") String id, @Body Task task);
+    Call<Void> editTask(@Header("Authorization") String token,@Path("id") String id, @Body Task task);
 
     @GET("meetings")
-    Call<List<Meeting>> getMeeting(@Query("user") String userID);
+    Call<List<Meeting>> getMeeting(@Header("Authorization") String token,@Query("user") String userID);
 
     @POST("meetings")
-    Call<Void> createMeeting(@Body Meeting meeting);
+    Call<Void> createMeeting(@Header("Authorization") String token,@Body Meeting meeting);
 
     @DELETE("meetings/{id}")
-    Call<Void> deleteMeeting(@Path("id") String id);
+    Call<Void> deleteMeeting(@Header("Authorization") String token,@Path("id") String id);
 
     @PATCH("meetings/{id}")
-    Call<Void> editMeeting(@Path("id") String id, @Body Meeting meeting);
+    Call<Void> editMeeting(@Header("Authorization") String token,@Path("id") String id, @Body Meeting meeting);
 }

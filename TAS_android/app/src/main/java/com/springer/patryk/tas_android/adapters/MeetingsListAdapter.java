@@ -35,11 +35,13 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
     private final DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm");
     private android.support.v4.app.FragmentManager manager;
     private String userID;
+    private String token;
 
-    public MeetingsListAdapter(Context context, RealmResults<Meeting> realmResults, String userID, boolean automaticUpdate, boolean animateResults) {
+    public MeetingsListAdapter(Context context, RealmResults<Meeting> realmResults, String userID,String token, boolean automaticUpdate, boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
         manager = ((AppCompatActivity) context).getSupportFragmentManager();
         this.userID = userID;
+        this.token=token;
     }
 
 
@@ -127,7 +129,7 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
     }
 
     public void deleteMeetingFromDB(int position) {
-        Call<Void> call = MyApp.getApiService().deleteMeeting(realmResults.get(position).getId());
+        Call<Void> call = MyApp.getApiService().deleteMeeting(token,realmResults.get(position).getId());
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
