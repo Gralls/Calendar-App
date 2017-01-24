@@ -59,19 +59,19 @@ public class LoginFragment extends Fragment {
                     user.setLogin(userLogin.getText().toString());
                     user.setPassword(userPassword.getText().toString());
 
-                    Call<Token> call = MyApp.getApiService().login(user);
-                    call.enqueue(new Callback<Token>() {
+                    Call<String> call = MyApp.getApiService().login(user);
+                    call.enqueue(new Callback<String>() {
                         @Override
-                        public void onResponse(Call<Token> call, Response<Token> response) {
+                        public void onResponse(Call<String> call, Response<String> response) {
                             if (response.code() == 200) {
-                                sessionManager.setToken(response.body().getToken());
-                                getUserDetails(response.body().getToken());
+                                sessionManager.setToken("Bearer "+response.body());
+                                getUserDetails(response.body());
                             } else
                                 Toast.makeText(mContext, "404 User not found", Toast.LENGTH_LONG).show();
                         }
 
                         @Override
-                        public void onFailure(Call<Token> call, Throwable t) {
+                        public void onFailure(Call<String> call, Throwable t) {
                             Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });

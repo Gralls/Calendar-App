@@ -27,13 +27,13 @@ public interface ApiEndpoint {
     Call<User> getUser(@Path("id") String id);
 
     @GET("users")
-    Call<List<User>> getUsers(@Query("login") String... login);
+    Call<List<User>> getUsers(@Header("Authorization") String token,@Query("login") String... login);
 
-    @POST("users")
+    @POST("create-user")
     Call<Void> createUser(@Body User user);
 
     @POST("authorize-user")
-    Call<Token> login(@Body User user);
+    Call<String> login(@Body User user);
 
     @GET("check-user-authorization")
     Call<User> getUserDetails(@Header("Authorization") String token);
