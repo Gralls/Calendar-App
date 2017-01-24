@@ -67,7 +67,11 @@ public class LoginFragment extends Fragment {
                         public void onResponse(Call<String> call, Response<String> response) {
                             if (response.code() == 200) {
                                 sessionManager.setToken("Bearer "+response.body());
+<<<<<<< HEAD
+                                getUserDetails(response.body());
+=======
                                 getUserDetails(sessionManager.getToken(),user.getLogin());
+>>>>>>> 16ae9768281b921084bcc1e4fc2d2d14024b31c3
                             } else
                                 Toast.makeText(mContext, "404 User not found", Toast.LENGTH_LONG).show();
                         }

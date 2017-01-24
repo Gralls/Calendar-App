@@ -37,11 +37,13 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
     private final DateTimeFormatter fmt = DateTimeFormat.forPattern("dd-MM-yyyy HH:mm");
     private android.support.v4.app.FragmentManager manager;
     private String userID;
+    String token;
 
-    public TaskListAdapter(Context context, RealmResults<Task> realmResults,String userID, boolean automaticUpdate, boolean animateResults) {
+    public TaskListAdapter(Context context, RealmResults<Task> realmResults,String userID,String token, boolean automaticUpdate, boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
         manager = ((AppCompatActivity) context).getSupportFragmentManager();
         this.userID=userID;
+        this.token=token;
     }
 
 
@@ -127,7 +129,7 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
     }
 
     public void deleteTaskFromDB(int position) {
-        Call<Void> call = MyApp.getApiService().deleteTask(realmResults.get(position).getId());
+        Call<Void> call = MyApp.getApiService().deleteTask(token,realmResults.get(position).getId());
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {

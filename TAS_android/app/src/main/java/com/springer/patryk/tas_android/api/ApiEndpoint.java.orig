@@ -29,9 +29,12 @@ public interface ApiEndpoint {
     @GET("users")
     Call<List<User>> getUsers(@Header("Authorization") String token,@Query("login") String... login);
 
-    Call<Void> createUser(@Body User user);
     @POST("create-user")
+<<<<<<< HEAD
     Call<Void> createUser(@Body User user);
+=======
+    Call<User> createUser(@Body User user);
+>>>>>>> 16ae9768281b921084bcc1e4fc2d2d14024b31c3
 
     @POST("authorize-user")
     Call<String> login(@Body User user);

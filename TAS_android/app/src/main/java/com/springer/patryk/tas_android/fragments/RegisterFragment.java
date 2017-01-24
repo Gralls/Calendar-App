@@ -21,6 +21,8 @@ import com.springer.patryk.tas_android.models.Token;
 import com.springer.patryk.tas_android.models.User;
 import com.springer.patryk.tas_android.utils.InputUtils;
 
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import retrofit2.Call;
@@ -69,10 +71,10 @@ public class RegisterFragment extends Fragment {
                     user.setPassword(registerPassword.getText().toString());
                     user.setName(registerName.getText().toString());
 
-                    Call<Void> call = MyApp.getApiService().createUser(user);
-                    call.enqueue(new Callback<Void>() {
+                    Call<User> call = MyApp.getApiService().createUser(user);
+                    call.enqueue(new Callback<User>() {
                         @Override
-                        public void onResponse(Call<Void> call, Response<Void> response) {
+                        public void onResponse(Call<User> call, Response<User> response) {
                             if (response.code() == 409) {
                                 Toast.makeText(mContext, "User already exists", Toast.LENGTH_LONG).show();
                             } else {
@@ -83,7 +85,7 @@ public class RegisterFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<Void> call, Throwable t) {
+                        public void onFailure(Call<User> call, Throwable t) {
                             Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
@@ -159,42 +161,37 @@ public class RegisterFragment extends Fragment {
         return true;
     }
 
-    public void login(User user) {
-        Call<Token> call = MyApp.getApiService().login(user);
-        call.enqueue(new Callback<Token>() {
+    public void login(final User user) {
+        Call<String> call = MyApp.getApiService().login(user);
+        call.enqueue(new Callback<String>() {
             @Override
-            public void onResponse(Call<Token> call, Response<Token> response) {
+            public void onResponse(Call<String> call, Response<String> response) {
                 if (response.code() == 200) {
-                    sessionManager.setToken(response.body().getToken());
-                    getUserDetails(response.body().getToken());
+                    sessionManager.setToken("Bearer "+response.body());
+                    getUserDetails(sessionManager.getToken(),user.getLogin());
                 } else
                     Toast.makeText(mContext, "404 User not found", Toast.LENGTH_LONG).show();
             }
 
             @Override
-            public void onFailure(Call<Token> call, Throwable t) {
+            public void onFailure(Call<String> call, Throwable t) {
                 Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_LONG).show();
             }
         });
     }
 
-    public void getUserDetails(String token) {
-        Call<User> call = MyApp.getApiService().getUserDetails(token);
-        call.enqueue(new Callback<User>() {
+    public void getUserDetails(String token,String login) {
+        Call<List<User>> call = MyApp.getApiService().getUsers(token,login);
+        call.enqueue(new Callback<List<User>>() {
             @Override
-            public void onResponse(Call<User> call, Response<User> response) {
-                User user = new User();
-                user.setEmail(response.body().getEmail());
-                user.setId(response.body().getId());
-                user.setLogin(response.body().getLogin());
-                user.setName(response.body().getName());
-                sessionManager.createSession(user);
+            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                sessionManager.createSession(response.body().get(0));
                 startActivity(new Intent(mContext,MainActivity.class));
                 Log.v("Session", sessionManager.getUserDetails().toString());
             }
 
             @Override
-            public void onFailure(Call<User> call, Throwable t) {
+            public void onFailure(Call<List<User>> call, Throwable t) {
 
             }
         });

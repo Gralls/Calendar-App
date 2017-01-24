@@ -47,7 +47,7 @@ public class AllTasksFragment extends BaseFragment {
                     .equalTo("startDate", date)
                     .findAllSorted(sortFieldNames, sorts);
         }
-        adapter = new TaskListAdapter(getContext(), realmResults, userDetails.get("id"), true, true);
+        adapter = new TaskListAdapter(getContext(), realmResults, userDetails.get("id"),sessionManager.getToken(), true, true);
     }
 
     @Override

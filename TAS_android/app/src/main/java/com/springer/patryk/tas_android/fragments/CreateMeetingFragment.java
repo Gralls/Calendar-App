@@ -136,13 +136,13 @@ public class CreateMeetingFragment extends BaseFragment {
     }
 
     public RealmList<Guest> convertInputGuests(final String input) {
-        String[] splitedGuests = input.trim().split(",");
+        final String[] splitedGuests = input.trim().split(",");
         final RealmList<Guest> guests = new RealmList<>();
-        Call<List<User>> call = MyApp.getApiService().getUsers(splitedGuests);
+        Call<List<User>> call = MyApp.getApiService().getUsers(sessionManager.getToken(), splitedGuests);
         call.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                if (!input.equals("")) {
+                if (!splitedGuests[0].equals("")) {
                     for (User user : response.body()) {
                         Guest guest = new Guest();
                         guest.setFlag("pending");
@@ -196,7 +196,7 @@ public class CreateMeetingFragment extends BaseFragment {
     }
 
     public void createMeeting() {
-        Call<Void> call = MyApp.getApiService().createMeeting(meeting);
+        Call<Void> call = MyApp.getApiService().createMeeting(sessionManager.getToken(), meeting);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -231,7 +231,7 @@ public class CreateMeetingFragment extends BaseFragment {
     }
 
     public void updateMeeting() {
-        Call<Void> call = MyApp.getApiService().editMeeting(meeting.getId(), meeting);
+        Call<Void> call = MyApp.getApiService().editMeeting(sessionManager.getToken(), meeting.getId(), meeting);
 
         call.enqueue(new Callback<Void>() {
             @Override
