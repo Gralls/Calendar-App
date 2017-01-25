@@ -29,7 +29,6 @@ public interface ApiEndpoint {
     @GET("users")
     Call<List<User>> getUsers(@Header("Authorization") String token,@Query("login") String... login);
 
-    Call<Void> createUser(@Body User user);
     @POST("create-user")
     Call<Void> createUser(@Body User user);
 

@@ -71,10 +71,10 @@ public class RegisterFragment extends Fragment {
                     user.setPassword(registerPassword.getText().toString());
                     user.setName(registerName.getText().toString());
 
-                    Call<User> call = MyApp.getApiService().createUser(user);
-                    call.enqueue(new Callback<User>() {
+                    Call<Void> call = MyApp.getApiService().createUser(user);
+                    call.enqueue(new Callback<Void>() {
                         @Override
-                        public void onResponse(Call<User> call, Response<User> response) {
+                        public void onResponse(Call<Void> call, Response<Void> response) {
                             if (response.code() == 409) {
                                 Toast.makeText(mContext, "User already exists", Toast.LENGTH_LONG).show();
                             } else {
@@ -85,7 +85,7 @@ public class RegisterFragment extends Fragment {
                         }
 
                         @Override
-                        public void onFailure(Call<User> call, Throwable t) {
+                        public void onFailure(Call<Void> call, Throwable t) {
                             Toast.makeText(mContext, t.getMessage(), Toast.LENGTH_LONG).show();
                         }
                     });
@@ -196,4 +196,6 @@ public class RegisterFragment extends Fragment {
             }
         });
     }
+
+
 }

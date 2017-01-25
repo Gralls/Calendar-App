@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
@@ -19,6 +20,7 @@ import com.springer.patryk.tas_android.activities.MainActivity;
 import com.springer.patryk.tas_android.models.Guest;
 import com.springer.patryk.tas_android.models.Meeting;
 import com.springer.patryk.tas_android.models.User;
+import com.springer.patryk.tas_android.utils.InputUtils;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -79,6 +81,7 @@ public class CreateMeetingFragment extends BaseFragment {
             String id = (String) getArguments().getSerializable("Meeting");
             meeting = realm.where(Meeting.class).equalTo("id", id).findFirst();
             meeting = realm.copyFromRealm(meeting);
+
             prepareView();
         } else {
             isNewMeeting = true;
@@ -88,7 +91,7 @@ public class CreateMeetingFragment extends BaseFragment {
             } else {
                 currentDate = DateTime.now();
             }
-            meetingStartDate.updateDate(currentDate.getYear(), currentDate.getMonthOfYear(), currentDate.getDayOfMonth());
+            meetingStartDate.updateDate(currentDate.getYear(), currentDate.getMonthOfYear()-1, currentDate.getDayOfMonth());
             meetingStartTime.setCurrentHour(currentDate.getHourOfDay());
             meetingStartTime.setCurrentMinute(currentDate.getMinuteOfHour());
         }
@@ -96,7 +99,8 @@ public class CreateMeetingFragment extends BaseFragment {
         createMeeting.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                initMeeting();
+                if (checkInput())
+                    convertInputGuests(meetingGuests.getText().toString());
             }
         });
     }
@@ -111,7 +115,7 @@ public class CreateMeetingFragment extends BaseFragment {
         meetingDescription.setText(meeting.getDescription());
         LocalDate localDate = LocalDate.parse(meeting.getStartDate());
         LocalTime localTime = LocalTime.parse(meeting.getStartTime());
-        meetingStartDate.updateDate(localDate.getYear(), localDate.getMonthOfYear(), localDate.getDayOfMonth());
+        meetingStartDate.updateDate(localDate.getYear(), localDate.getMonthOfYear() - 1, localDate.getDayOfMonth());
         meetingStartTime.setCurrentHour(localTime.getHourOfDay());
         meetingStartTime.setCurrentMinute(localTime.getMinuteOfHour());
         meetingGuests.setText(setGuestsInput());
@@ -121,18 +125,12 @@ public class CreateMeetingFragment extends BaseFragment {
     private String setGuestsInput() {
         String guests = "";
         for (Guest guest : meeting.getGuests()) {
+
             guests = guests + guest.getLogin() + ",";
         }
         if (guests.length() > 0)
             guests = guests.substring(0, guests.length() - 1);
         return guests;
-    }
-
-    public void initMeeting() {
-        final RealmList<Guest> guestRealmList = convertInputGuests(meetingGuests.getText().toString());
-
-
-        int x = 0;
     }
 
     public RealmList<Guest> convertInputGuests(final String input) {
@@ -152,34 +150,11 @@ public class CreateMeetingFragment extends BaseFragment {
                     }
                 }
 
-
                 if (isNewMeeting) {
-                    meeting = new Meeting();
-                    meeting.setUser(sessionManager.getUserDetails().get("id"));
-                    meeting.setTitle(meetingTitle.getText().toString());
-                    meeting.setDescription(meetingDescription.getText().toString());
-                    LocalDate startDate = new LocalDate(meetingStartDate.getYear(), meetingStartDate.getMonth(), meetingStartDate.getDayOfMonth());
-                    meeting.setStartDate(startDate.toString());
-                    LocalTime startTime = new LocalTime(meetingStartTime.getCurrentHour(), meetingStartTime.getCurrentMinute());
-                    meeting.setStartTime(startTime.toString());
-                    meeting.setPlace(meetingPlace.getText().toString());
-                    meeting.setGuests(guests);
+                    initMeeting(guests);
                     createMeeting();
                 } else {
-                    meeting.setTitle(meetingTitle.getText().toString());
-                    meeting.setDescription(meetingDescription.getText().toString());
-                    LocalDate startDate = new LocalDate(meetingStartDate.getYear(), meetingStartDate.getMonth(), meetingStartDate.getDayOfMonth());
-                    meeting.setStartDate(startDate.toString());
-                    LocalTime startTime = new LocalTime(meetingStartTime.getCurrentHour(), meetingStartTime.getCurrentMinute());
-                    meeting.setStartTime(startTime.toString());
-                    meeting.setPlace(meetingPlace.getText().toString());
-                    meeting.setGuests(guests);
-                    realm.executeTransaction(new Realm.Transaction() {
-                        @Override
-                        public void execute(Realm realm) {
-                            realm.insertOrUpdate(meeting);
-                        }
-                    });
+                    editMeetingInDB(guests);
                     updateMeeting();
                 }
 
@@ -193,6 +168,19 @@ public class CreateMeetingFragment extends BaseFragment {
             }
         });
         return guests;
+    }
+
+    public void initMeeting(RealmList<Guest> guests) {
+        meeting = new Meeting();
+        meeting.setUser(sessionManager.getUserDetails().get("id"));
+        meeting.setTitle(meetingTitle.getText().toString());
+        meeting.setDescription(meetingDescription.getText().toString());
+        LocalDate startDate = new LocalDate(meetingStartDate.getYear(), meetingStartDate.getMonth()+1, meetingStartDate.getDayOfMonth());
+        meeting.setStartDate(startDate.toString());
+        LocalTime startTime = new LocalTime(meetingStartTime.getCurrentHour(), meetingStartTime.getCurrentMinute());
+        meeting.setStartTime(startTime.toString());
+        meeting.setPlace(meetingPlace.getText().toString());
+        meeting.setGuests(guests);
     }
 
     public void createMeeting() {
@@ -213,19 +201,19 @@ public class CreateMeetingFragment extends BaseFragment {
         });
     }
 
-    public void editMeetingInDB() {
+    public void editMeetingInDB(RealmList<Guest> guests) {
+        meeting.setTitle(meetingTitle.getText().toString());
+        meeting.setDescription(meetingDescription.getText().toString());
+        LocalDate startDate = new LocalDate(meetingStartDate.getYear(), meetingStartDate.getMonth()+1, meetingStartDate.getDayOfMonth());
+        meeting.setStartDate(startDate.toString());
+        LocalTime startTime = new LocalTime(meetingStartTime.getCurrentHour(), meetingStartTime.getCurrentMinute());
+        meeting.setStartTime(startTime.toString());
+        meeting.setPlace(meetingPlace.getText().toString());
+        meeting.setGuests(guests);
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                meeting.setTitle(meetingTitle.getText().toString());
-                meeting.setDescription(meetingDescription.getText().toString());
-
-                LocalDate startDate = new LocalDate(meetingStartDate.getYear(), meetingStartDate.getMonth(), meetingStartDate.getDayOfMonth());
-                meeting.setStartDate(startDate.toString());
-                LocalTime startTime = new LocalTime(meetingStartTime.getCurrentHour(), meetingStartTime.getCurrentMinute());
-                meeting.setStartTime(startTime.toString());
-                meeting.setGuests(convertInputGuests(meetingGuests.getText().toString()));
-                meeting.setPlace(meetingPlace.getText().toString());
+                realm.insertOrUpdate(meeting);
             }
         });
     }
@@ -252,5 +240,18 @@ public class CreateMeetingFragment extends BaseFragment {
     public void onDestroyView() {
         ((MainActivity) getActivity()).showMainFab();
         super.onDestroyView();
+    }
+
+    public boolean checkInput() {
+        boolean validateStatus = true;
+        if (InputUtils.checkIsEmpty(meetingTitle.getText().toString())) {
+            validateStatus = false;
+            meetingTitle.setError("Title is required");
+        }
+        if (InputUtils.checkIsEmpty(meetingPlace.getText().toString())) {
+            validateStatus = false;
+            meetingPlace.setError("Place is required");
+        }
+        return validateStatus;
     }
 }
