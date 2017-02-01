@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
@@ -56,7 +57,8 @@ public class CreateMeetingFragment extends BaseFragment {
     EditText meetingGuests;
     @BindView(R.id.createNewMeeting)
     Button createMeeting;
-
+    @BindView(R.id.meetingStatus)
+    CheckBox meetingStatus;
 
     private SharedPreferences sharedPreferences;
     private boolean isNewMeeting;
@@ -120,12 +122,15 @@ public class CreateMeetingFragment extends BaseFragment {
         meetingStartTime.setCurrentMinute(localTime.getMinuteOfHour());
         meetingGuests.setText(setGuestsInput());
         meetingPlace.setText(meeting.getPlace());
+        if (meeting.getStatus().equals("public")) {
+            meetingStatus.setChecked(true);
+        }else
+            meetingStatus.setChecked(false);
     }
 
     private String setGuestsInput() {
         String guests = "";
         for (Guest guest : meeting.getGuests()) {
-
             guests = guests + guest.getLogin() + ",";
         }
         if (guests.length() > 0)
@@ -140,7 +145,7 @@ public class CreateMeetingFragment extends BaseFragment {
         call.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                if (!splitedGuests[0].equals("")) {
+                if (!splitedGuests[0].equals("") && response.body()!=null) {
                     for (User user : response.body()) {
                         Guest guest = new Guest();
                         guest.setFlag("pending");
@@ -175,12 +180,18 @@ public class CreateMeetingFragment extends BaseFragment {
         meeting.setUser(sessionManager.getUserDetails().get("id"));
         meeting.setTitle(meetingTitle.getText().toString());
         meeting.setDescription(meetingDescription.getText().toString());
+        if (meetingStatus.isChecked()) {
+            meeting.setStatus("public");
+        }else {
+            meeting.setStatus("private");
+        }
         LocalDate startDate = new LocalDate(meetingStartDate.getYear(), meetingStartDate.getMonth()+1, meetingStartDate.getDayOfMonth());
         meeting.setStartDate(startDate.toString());
         LocalTime startTime = new LocalTime(meetingStartTime.getCurrentHour(), meetingStartTime.getCurrentMinute());
         meeting.setStartTime(startTime.toString());
         meeting.setPlace(meetingPlace.getText().toString());
         meeting.setGuests(guests);
+
     }
 
     public void createMeeting() {
@@ -210,6 +221,10 @@ public class CreateMeetingFragment extends BaseFragment {
         meeting.setStartTime(startTime.toString());
         meeting.setPlace(meetingPlace.getText().toString());
         meeting.setGuests(guests);
+        if(meetingStatus.isChecked()){
+            meeting.setStatus("public");
+        }else
+            meeting.setStatus("private");
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {

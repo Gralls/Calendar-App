@@ -11,10 +11,12 @@ import android.widget.Toast;
 
 import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.SessionManager;
+import com.springer.patryk.tas_android.models.Guest;
 import com.springer.patryk.tas_android.models.Meeting;
 import com.springer.patryk.tas_android.models.Task;
 import com.springer.patryk.tas_android.models.UserState;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -66,16 +68,28 @@ public class BaseFragment extends Fragment {
     }
 
     public void updateTasks(final String userID) {
-        Call<List<Task>> tasks = MyApp.getApiService().getTasks(sessionManager.getToken(),userID);
+        final Call<List<Task>> tasks = MyApp.getApiService().getTasks(sessionManager.getToken(),userID);
 
         tasks.enqueue(new Callback<List<Task>>() {
             @Override
             public void onResponse(Call<List<Task>> call, final Response<List<Task>> response) {
-                final String[] ids = new String[response.body().size() > 0 ? response.body().size() : 1];
-                if (response.body().size() > 0) {
-                    Log.d("BaseFragment", response.body().toString());
-                    for (Task task : response.body()) {
-                        ids[response.body().indexOf(task)] = task.getId();
+                final List<Task> tasksToInsert = new ArrayList<Task>();
+                for(Task task:response.body()){
+                    if(task.getUser().equals(userID)||task.getStatus().equals("public"))
+                        tasksToInsert.add(task);
+                    else{
+                        for(Guest guest:task.getGuests()){
+                            if(guest.getId().equals(userID)&&(guest.getFlag().equals("pending")||guest.getFlag().equals("accepted"))){
+                                tasksToInsert.add(task);
+                            }
+                        }
+                    }
+                }
+                final String[] ids = new String[tasksToInsert.size() > 0 ? tasksToInsert.size() : 1];
+                if (tasksToInsert.size() > 0) {
+                    Log.d("BaseFragment", tasksToInsert.toString());
+                    for (Task task : tasksToInsert) {
+                        ids[tasksToInsert.indexOf(task)] = task.getId();
                     }
                 } else
                     ids[0] = "";
@@ -84,7 +98,7 @@ public class BaseFragment extends Fragment {
                     public void execute(Realm realm) {
                         RealmResults<Task> realmResults = realm.where(Task.class).not().in("id", ids).findAll();
                         realmResults.deleteAllFromRealm();
-                        realm.insertOrUpdate(response.body());
+                        realm.insertOrUpdate(tasksToInsert);
                     }
                 });
                 updateMeetings(userID);
@@ -108,11 +122,23 @@ public class BaseFragment extends Fragment {
             @Override
             public void onResponse(Call<List<Meeting>> call, final Response<List<Meeting>> response) {
                 Log.d("Meetings", response.code() + response.message());
-                final String[] ids = new String[response.body().size() > 0 ? response.body().size() : 1];
-                if (response.body().size() > 0) {
+                final List<Meeting> meetingToInsert = new ArrayList<Meeting>();
+                for (Meeting meeting : response.body()) {
+                    if (meeting.getUser().equals(userID) || meeting.getStatus().equals("public")) {
+                        meetingToInsert.add(meeting);
+                    }else{
+                        for (Guest guest : meeting.getGuests()) {
+                            if(guest.getId().equals(userID)&&(guest.getFlag().equals("pending")||guest.getFlag().equals("accepted"))){
+                                meetingToInsert.add(meeting);
+                            }
+                        }
+                    }
+                }
+                final String[] ids = new String[meetingToInsert.size() > 0 ? meetingToInsert.size() : 1];
+                if (meetingToInsert.size() > 0) {
                     for (Meeting meeting :
-                            response.body()) {
-                        ids[response.body().indexOf(meeting)] = meeting.getId();
+                            meetingToInsert) {
+                        ids[meetingToInsert.indexOf(meeting)] = meeting.getId();
                     }
                 } else
                     ids[0] = "";
@@ -121,7 +147,7 @@ public class BaseFragment extends Fragment {
                     public void execute(Realm realm) {
                         RealmResults<Meeting> realmResults = realm.where(Meeting.class).not().in("id", ids).findAll();
                         realmResults.deleteAllFromRealm();
-                        realm.insertOrUpdate(response.body());
+                        realm.insertOrUpdate(meetingToInsert);
                         RealmList<Task> tasks = new RealmList<Task>();
                         tasks.addAll(realm.where(Task.class).findAll());
                         RealmList<Meeting> meetings = new RealmList<Meeting>();

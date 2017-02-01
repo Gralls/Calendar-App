@@ -10,9 +10,11 @@ import android.widget.TextView;
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.adapters.MeetingsListAdapter;
 import com.springer.patryk.tas_android.models.Meeting;
+import com.springer.patryk.tas_android.models.Task;
 
 import butterknife.BindView;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -49,6 +51,12 @@ public class AllMeetingsFragment extends BaseFragment {
                     .findAllSorted(sortFieldNames,sorts);
         }
         adapter = new MeetingsListAdapter(getContext(), realmResults, userDetails.get("id"),sessionManager.getToken(), true, true);
+        realmResults.addChangeListener(new RealmChangeListener<RealmResults<Meeting>>() {
+            @Override
+            public void onChange(RealmResults<Meeting> element) {
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     private boolean checkIsDayDetails() {

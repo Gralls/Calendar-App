@@ -13,6 +13,7 @@ import com.springer.patryk.tas_android.models.Task;
 
 import butterknife.BindView;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
+import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 import io.realm.Sort;
 
@@ -48,6 +49,12 @@ public class AllTasksFragment extends BaseFragment {
                     .findAllSorted(sortFieldNames, sorts);
         }
         adapter = new TaskListAdapter(getContext(), realmResults, userDetails.get("id"),sessionManager.getToken(), true, true);
+        realmResults.addChangeListener(new RealmChangeListener<RealmResults<Task>>() {
+            @Override
+            public void onChange(RealmResults<Task> element) {
+                adapter.notifyDataSetChanged();
+            }
+        });
     }
 
     @Override

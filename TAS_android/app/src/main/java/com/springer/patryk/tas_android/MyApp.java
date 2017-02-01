@@ -30,9 +30,7 @@ public class MyApp extends Application {
     public void onCreate() {
         super.onCreate();
         JodaTimeAndroid.init(this);
-        Gson gson = new GsonBuilder()
-                .registerTypeAdapter(Guest.class, new GuestAdapter())
-                .create();
+
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())

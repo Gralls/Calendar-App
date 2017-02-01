@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TimePicker;
@@ -54,6 +55,8 @@ public class CreateTaskFragment extends BaseFragment {
     EditText taskGuests;
     @BindView(R.id.createNewTask)
     Button createTask;
+    @BindView(R.id.publicCheckbox)
+    CheckBox isPublic;
     private SharedPreferences sharedPreferences;
     private boolean isNewTask;
     private Task task;
@@ -77,7 +80,7 @@ public class CreateTaskFragment extends BaseFragment {
             isNewTask = false;
             String id = (String) getArguments().getSerializable("Task");
             task = realm.where(Task.class).equalTo("id", id).findFirst();
-
+            task = realm.copyFromRealm(task);
             setTaskDetails();
         } else {
             isNewTask = true;
@@ -96,10 +99,7 @@ public class CreateTaskFragment extends BaseFragment {
             @Override
             public void onClick(View view) {
                 if (checkInput()) {
-                    if (isNewTask)
-                        initTask();
-                    else
-                        editTask();
+                    convertInputGuests(taskGuests.getText().toString());
                 }
             }
         });
@@ -115,12 +115,15 @@ public class CreateTaskFragment extends BaseFragment {
         return validateStatus;
     }
 
-    public void initTask() {
+    public void initTask(RealmList<Guest> guests) {
         task = new Task();
         task.setTitle(taskTitle.getText().toString());
         task.setUser(sessionManager.getUserDetails().get("id"));
         task.setDescription(taskDescription.getText().toString());
-
+        if(isPublic.isChecked())
+            task.setStatus("public");
+        else
+            task.setStatus("private");
         DateTime startDateTime = new DateTime(taskStartDate.getYear()
                 , (taskStartDate.getMonth() + 1)
                 , taskStartDate.getDayOfMonth()
@@ -130,12 +133,12 @@ public class CreateTaskFragment extends BaseFragment {
                 , 0);
         task.setStartDate(startDateTime.toLocalDate().toString());
         task.setStartTime(startDateTime.toLocalTime().toString());
-        task.setGuests(convertInputGuests(taskGuests.getText().toString()));
+        task.setGuests(guests);
     }
 
     public RealmList<Guest> convertInputGuests(String input) {
         final String[] splitedGuests = input.split(",");
-        for(int i=0;i<splitedGuests.length;i++) {
+        for (int i = 0; i < splitedGuests.length; i++) {
             splitedGuests[i] = splitedGuests[i].trim();
         }
         final RealmList<Guest> guests = new RealmList<>();
@@ -143,7 +146,7 @@ public class CreateTaskFragment extends BaseFragment {
         call.enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                if (!splitedGuests[0].equals("")) {
+                if (!splitedGuests[0].equals("") && response.body()!=null) {
                     for (User user : response.body()) {
                         Guest guest = new Guest();
                         guest.setFlag("pending");
@@ -152,7 +155,14 @@ public class CreateTaskFragment extends BaseFragment {
                         guests.add(guest);
                     }
                 }
-                createTask();
+
+                if (isNewTask) {
+                    initTask(guests);
+                    createTask();
+                } else {
+                    editTask(guests);
+
+                }
             }
 
             @Override
@@ -194,39 +204,63 @@ public class CreateTaskFragment extends BaseFragment {
         taskStartDate.updateDate(localDate.getYear(), localDate.getMonthOfYear() - 1, localDate.getDayOfMonth());
         taskStartTime.setCurrentHour(localTime.getHourOfDay());
         taskStartTime.setCurrentMinute(localTime.getMinuteOfHour());
+        taskGuests.setText(setGuestsInput());
+        if (task.getStatus().equals("public")) {
+            isPublic.setChecked(true);
+        } else {
+            isPublic.setChecked(false);
+        }
     }
 
-    public void editTask() {
+    private String setGuestsInput() {
+        String guests = "";
+        for (Guest guest : task.getGuests()) {
+            guests = guests + guest.getLogin() + ",";
+        }
+        if (guests.length() > 0) {
+            guests = guests.substring(0, guests.length() - 1);
+        }
+        return guests;
+    }
+
+    public void editTask(RealmList<Guest>guests) {
+
+        task.setTitle(taskTitle.getText().toString());
+        task.setDescription(taskDescription.getText().toString());
+
+        DateTime startDateTime = new DateTime(taskStartDate.getYear()
+                , (taskStartDate.getMonth() + 1)
+                , taskStartDate.getDayOfMonth()
+                , taskStartTime.getCurrentHour()
+                , taskStartTime.getCurrentMinute()
+                , 0
+                , 0);
+
+        task.setStartDate(startDateTime.toLocalDate().toString());
+        task.setStartTime(startDateTime.toLocalTime().toString());
+        task.setGuests(guests);
+        if(isPublic.isChecked())
+            task.setStatus("public");
+        else
+            task.setStatus("private");
         realm.executeTransaction(new Realm.Transaction() {
             @Override
             public void execute(Realm realm) {
-                task.setTitle(taskTitle.getText().toString());
-                task.setDescription(taskDescription.getText().toString());
-
-                DateTime startDateTime = new DateTime(taskStartDate.getYear()
-                        , (taskStartDate.getMonth() + 1)
-                        , taskStartDate.getDayOfMonth()
-                        , taskStartTime.getCurrentHour()
-                        , taskStartTime.getCurrentMinute()
-                        , 0
-                        , 0);
-
-                task.setStartDate(startDateTime.toLocalDate().toString());
-                task.setStartTime(startDateTime.toLocalTime().toString());
+                realm.insertOrUpdate(task);
             }
         });
-        Task taskToUpdate = realm.copyFromRealm(task);
-        Call<Void> call = MyApp.getApiService().editTask(sessionManager.getToken(), taskToUpdate.getId(), taskToUpdate);
+
+        Call<Void> call = MyApp.getApiService().editTask(sessionManager.getToken(), task.getId(), task);
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
-                Toast.makeText(getContext(), "Task updated", Toast.LENGTH_SHORT).show();
+                showToast("Task updated");
                 getFragmentManager().popBackStack();
             }
 
             @Override
             public void onFailure(Call<Void> call, Throwable t) {
-
+                showToast("Check internet connection");
             }
         });
     }

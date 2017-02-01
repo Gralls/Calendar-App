@@ -37,6 +37,9 @@ public class Meeting extends RealmObject {
     @SerializedName("guests")
     private RealmList<Guest> guests;
 
+    @SerializedName("status")
+    private String status;
+
     public String getId() {
         return id;
     }
@@ -99,5 +102,13 @@ public class Meeting extends RealmObject {
 
     public void setGuests(RealmList<Guest> guests) {
         this.guests = guests;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

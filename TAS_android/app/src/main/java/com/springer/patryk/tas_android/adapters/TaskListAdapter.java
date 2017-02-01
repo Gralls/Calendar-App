@@ -4,6 +4,7 @@ package com.springer.patryk.tas_android.adapters;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -14,6 +15,7 @@ import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
 import com.springer.patryk.tas_android.models.Guest;
 import com.springer.patryk.tas_android.models.Task;
+import com.springer.patryk.tas_android.models.User;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -21,7 +23,9 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
 import retrofit2.Call;
@@ -39,13 +43,12 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
     private String userID;
     String token;
 
-    public TaskListAdapter(Context context, RealmResults<Task> realmResults,String userID,String token, boolean automaticUpdate, boolean animateResults) {
+    public TaskListAdapter(Context context, RealmResults<Task> realmResults, String userID, String token, boolean automaticUpdate, boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
         manager = ((AppCompatActivity) context).getSupportFragmentManager();
-        this.userID=userID;
-        this.token=token;
+        this.userID = userID;
+        this.token = token;
     }
-
 
 
     public class ViewHolder extends RealmViewHolder {
@@ -54,6 +57,8 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
         TextView startDate;
         TextView creator;
         TextView guests;
+        TextView isPublic;
+
         public ViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.taskTitle);
@@ -61,18 +66,49 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
             startDate = (TextView) view.findViewById(R.id.taskStartDate);
             creator = (TextView) view.findViewById(R.id.taskCreator);
             guests = (TextView) view.findViewById(R.id.taskGuests);
+            isPublic = (TextView) view.findViewById(R.id.taskStatus);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    if(userID.equals(realmResults.get(getAdapterPosition()).getUser())) {
+                    if (userID.equals(realmResults.get(getAdapterPosition()).getUser())) {
                         Bundle args = new Bundle();
                         args.putSerializable("Task", realmResults.get(getAdapterPosition()).getId());
                         CreateTaskFragment createTaskFragment = new CreateTaskFragment();
                         createTaskFragment.setArguments(args);
                         manager.beginTransaction().replace(R.id.mainContent, createTaskFragment, null).addToBackStack(null).commit();
+                    } else if(!realmResults.get(getAdapterPosition()).getStatus().equals("public")){
+                        final Realm realm= Realm.getDefaultInstance();
+                        final Task task = realm.copyFromRealm(realmResults.get(getAdapterPosition()));
+                        final RealmList<Guest> tasksGuest = task.getGuests();
+
+                        for (final Guest guest : tasksGuest) {
+                            if (guest.getId().equals(userID)) {
+                                guest.setFlag("accepted");
+
+                            }
+                        }
+
+                        Call<Void> call = MyApp.getApiService().editTask(token, task.getId(), task);
+                        call.enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                Toast.makeText(getContext(), "Invite accepted", Toast.LENGTH_SHORT).show();
+                              realm.executeTransaction(new Realm.Transaction() {
+                                  @Override
+                                  public void execute(Realm realm) {
+                                      realm.insertOrUpdate(task);
+                                  }
+                              });
+                                realm.close();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Toast.makeText(getContext(), "Check internet connection", Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     }
-                    else
-                        Toast.makeText(getContext(),"You cant edit this task",Toast.LENGTH_SHORT).show();
+
                 }
             });
         }
@@ -86,14 +122,14 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
     }
 
     @Override
-    public void onBindRealmViewHolder(ViewHolder holder, int position) {
-        Task task = realmResults.get(position);
+    public void onBindRealmViewHolder(final ViewHolder holder, int position) {
+       final Task task = realmResults.get(position);
         holder.title.setText(task.getTitle());
         holder.description.setText(task.getDescription());
         LocalDate localDate = LocalDate.parse(task.getStartDate());
         DateTime startDate = localDate.toDateTime(LocalTime.parse(task.getStartTime()));
         holder.startDate.setText(fmt.print(startDate));
-        holder.creator.setText(task.getUser());
+        holder.isPublic.setText(task.getStatus());
         String guests = "";
         for (Guest guest :
                 task.getGuests()) {
@@ -104,6 +140,21 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
         }
 
         holder.guests.setText(guests);
+        Call<User> call = MyApp.getApiService().getUser(token,task.getUser());
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+
+                holder.creator.setText(response.body().getLogin());
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
+
     }
 
     @Override
@@ -120,16 +171,16 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
 
     @Override
     public void onItemSwipedDismiss(int position) {
-        if(realmResults.get(position).getUser().equals(userID)) {
+        if (realmResults.get(position).getUser().equals(userID)) {
             deleteTaskFromDB(position);
-            super.onItemSwipedDismiss(position);
-        }else{
+        } else if(!realmResults.get(position).getStatus().equals("public")) {
             removeFromGuests(position);
         }
+        super.onItemSwipedDismiss(position);
     }
 
     public void deleteTaskFromDB(int position) {
-        Call<Void> call = MyApp.getApiService().deleteTask(token,realmResults.get(position).getId());
+        Call<Void> call = MyApp.getApiService().deleteTask(token, realmResults.get(position).getId());
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -143,9 +194,31 @@ public class TaskListAdapter extends RealmBasedRecyclerViewAdapter<Task, TaskLis
         });
     }
 
-    public void removeFromGuests(int position){
+    public void removeFromGuests(int position) {
+        final Realm realm= Realm.getDefaultInstance();
+        final Task task = realm.copyFromRealm(realmResults.get(position));
+        final RealmList<Guest> tasksGuest = task.getGuests();
+
+        for (final Guest guest : tasksGuest) {
+            if (guest.getId().equals(userID)) {
+                        guest.setFlag("rejected");
+
+            }
+        }
+
+        Call<Void> call = MyApp.getApiService().editTask(token, task.getId(), task);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(getContext(), "Invite rejected", Toast.LENGTH_SHORT).show();
+                realm.close();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getContext(), "Check internet connection", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
-
-
 }

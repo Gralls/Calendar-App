@@ -24,7 +24,7 @@ import retrofit2.http.Query;
 public interface ApiEndpoint {
 
     @GET("users/{id}")
-    Call<User> getUser(@Path("id") String id);
+    Call<User> getUser(@Header("Authorization")String token,@Path("id") String id);
 
     @GET("users")
     Call<List<User>> getUsers(@Header("Authorization") String token,@Query("login") String... login);

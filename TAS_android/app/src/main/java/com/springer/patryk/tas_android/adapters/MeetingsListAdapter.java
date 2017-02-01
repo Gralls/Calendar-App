@@ -13,6 +13,8 @@ import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.fragments.CreateMeetingFragment;
 import com.springer.patryk.tas_android.models.Guest;
 import com.springer.patryk.tas_android.models.Meeting;
+import com.springer.patryk.tas_android.models.Task;
+import com.springer.patryk.tas_android.models.User;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
@@ -20,7 +22,9 @@ import org.joda.time.LocalTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 
+import io.realm.Realm;
 import io.realm.RealmBasedRecyclerViewAdapter;
+import io.realm.RealmList;
 import io.realm.RealmResults;
 import io.realm.RealmViewHolder;
 import retrofit2.Call;
@@ -37,11 +41,11 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
     private String userID;
     private String token;
 
-    public MeetingsListAdapter(Context context, RealmResults<Meeting> realmResults, String userID,String token, boolean automaticUpdate, boolean animateResults) {
+    public MeetingsListAdapter(Context context, RealmResults<Meeting> realmResults, String userID, String token, boolean automaticUpdate, boolean animateResults) {
         super(context, realmResults, automaticUpdate, animateResults);
         manager = ((AppCompatActivity) context).getSupportFragmentManager();
         this.userID = userID;
-        this.token=token;
+        this.token = token;
     }
 
 
@@ -52,7 +56,7 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
         TextView creator;
         TextView place;
         TextView guests;
-
+        TextView status;
         public ViewHolder(View view) {
             super(view);
             title = (TextView) view.findViewById(R.id.meetingTitle);
@@ -61,6 +65,7 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
             creator = (TextView) view.findViewById(R.id.meetingCreator);
             place = (TextView) view.findViewById(R.id.meetingPlace);
             guests = (TextView) view.findViewById(R.id.meetingGuest);
+            status = (TextView) view.findViewById(R.id.meetingStatus);
             view.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
@@ -70,8 +75,39 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
                         CreateMeetingFragment createMeetingFragment = new CreateMeetingFragment();
                         createMeetingFragment.setArguments(args);
                         manager.beginTransaction().replace(R.id.mainContent, createMeetingFragment, null).addToBackStack(null).commit();
-                    } else
-                        Toast.makeText(getContext(), "You cant edit this meeting", Toast.LENGTH_SHORT).show();
+                    } else if(!realmResults.get(getAdapterPosition()).getStatus().equals("public")) {
+                        final Realm realm = Realm.getDefaultInstance();
+                        final Meeting meeting = realm.copyFromRealm(realmResults.get(getAdapterPosition()));
+                        final RealmList<Guest> meetingGuest = meeting.getGuests();
+
+                        for (final Guest guest : meetingGuest) {
+                            if (guest.getId().equals(userID)) {
+                                guest.setFlag("accepted");
+
+                            }
+                        }
+
+                        Call<Void> call = MyApp.getApiService().editMeeting(token, meeting.getId(), meeting);
+                        call.enqueue(new Callback<Void>() {
+                            @Override
+                            public void onResponse(Call<Void> call, Response<Void> response) {
+                                Toast.makeText(getContext(), "Invite accepted", Toast.LENGTH_SHORT).show();
+                                realm.executeTransaction(new Realm.Transaction() {
+                                    @Override
+                                    public void execute(Realm realm) {
+                                        realm.insertOrUpdate(meeting);
+                                    }
+                                });
+                                realm.close();
+                            }
+
+                            @Override
+                            public void onFailure(Call<Void> call, Throwable t) {
+                                Toast.makeText(getContext(), "Check internet connection", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+                    }
                 }
             });
         }
@@ -85,7 +121,7 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
     }
 
     @Override
-    public void onBindRealmViewHolder(ViewHolder holder, int position) {
+    public void onBindRealmViewHolder(final ViewHolder holder, int position) {
         Meeting meeting = realmResults.get(position);
         holder.title.setText(meeting.getTitle());
         holder.description.setText(meeting.getDescription());
@@ -94,6 +130,7 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
         holder.startDate.setText(fmt.print(startDate));
         holder.creator.setText(meeting.getUser());
         holder.place.setText(meeting.getPlace());
+        holder.status.setText(meeting.getStatus());
         String guests = "";
         for (Guest guest :
                 meeting.getGuests()) {
@@ -103,6 +140,20 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
             guests = guests.substring(0, guests.length() - 1);
         }
         holder.guests.setText(guests);
+        Call<User> call = MyApp.getApiService().getUser(token,meeting.getUser());
+        call.enqueue(new Callback<User>() {
+            @Override
+            public void onResponse(Call<User> call, Response<User> response) {
+
+                holder.creator.setText(response.body().getLogin());
+
+            }
+
+            @Override
+            public void onFailure(Call<User> call, Throwable t) {
+
+            }
+        });
     }
 
 
@@ -123,13 +174,13 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
         if (realmResults.get(position).getUser().equals(userID)) {
             deleteMeetingFromDB(position);
             super.onItemSwipedDismiss(position);
-        } else {
+        } else if(!realmResults.get(position).getStatus().equals("public")) {
             removeFromGuests(position);
         }
     }
 
     public void deleteMeetingFromDB(int position) {
-        Call<Void> call = MyApp.getApiService().deleteMeeting(token,realmResults.get(position).getId());
+        Call<Void> call = MyApp.getApiService().deleteMeeting(token, realmResults.get(position).getId());
         call.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call, Response<Void> response) {
@@ -144,6 +195,30 @@ public class MeetingsListAdapter extends RealmBasedRecyclerViewAdapter<Meeting, 
     }
 
     public void removeFromGuests(int position) {
+        final Realm realm= Realm.getDefaultInstance();
+        final Meeting meeting = realm.copyFromRealm(realmResults.get(position));
+        final RealmList<Guest> tasksGuest = meeting.getGuests();
+
+        for (final Guest guest : tasksGuest) {
+            if (guest.getId().equals(userID)) {
+                guest.setFlag("rejected");
+
+            }
+        }
+
+        Call<Void> call = MyApp.getApiService().editMeeting(token, meeting.getId(), meeting);
+        call.enqueue(new Callback<Void>() {
+            @Override
+            public void onResponse(Call<Void> call, Response<Void> response) {
+                Toast.makeText(getContext(), "Invite rejected", Toast.LENGTH_SHORT).show();
+                realm.close();
+            }
+
+            @Override
+            public void onFailure(Call<Void> call, Throwable t) {
+                Toast.makeText(getContext(), "Check internet connection", Toast.LENGTH_SHORT).show();
+            }
+        });
 
     }
 
