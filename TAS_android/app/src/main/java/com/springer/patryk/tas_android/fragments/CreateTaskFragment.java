@@ -148,11 +148,13 @@ public class CreateTaskFragment extends BaseFragment {
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 if (!splitedGuests[0].equals("") && response.body()!=null) {
                     for (User user : response.body()) {
-                        Guest guest = new Guest();
-                        guest.setFlag("pending");
-                        guest.setId(user.getId());
-                        guest.setLogin(user.getLogin());
-                        guests.add(guest);
+                        if(!user.getId().equals(sessionManager.getUserDetails().get("id"))) {
+                            Guest guest = new Guest();
+                            guest.setFlag("pending");
+                            guest.setId(user.getId());
+                            guest.setLogin(user.getLogin());
+                            guests.add(guest);
+                        }
                     }
                 }
 

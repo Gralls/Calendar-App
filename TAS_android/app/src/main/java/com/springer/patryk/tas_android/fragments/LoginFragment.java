@@ -69,7 +69,7 @@ public class LoginFragment extends Fragment {
                                 sessionManager.setToken("Bearer "+response.body());
                                 getUserDetails(sessionManager.getToken(),user.getLogin());
                             } else
-                                Toast.makeText(mContext, "404 User not found", Toast.LENGTH_LONG).show();
+                                Toast.makeText(mContext, "Bad credentials", Toast.LENGTH_LONG).show();
                         }
 
                         @Override
