@@ -1,89 +1,128 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <LinearLayout
+        android:id="@+id/Login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical"
+        android:layout_marginTop="10dp">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/login" />
+            android:text="@string/login"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/registerLogin"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:layout_margin="10dp"
+            android:textAlignment="center"/>
     </LinearLayout>
     <LinearLayout
+        android:layout_below="@id/Login"
+        android:id="@+id/Name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/register_name" />
+            android:text="@string/register_name"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/registerName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPersonName" />
+            android:inputType="textPersonName"
+            android:layout_margin="10dp"
+            android:textAlignment="center"/>
     </LinearLayout>
     <LinearLayout
+        android:layout_below="@id/Name"
+        android:id="@+id/Email"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/email" />
+            android:text="@string/email"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/registerEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textEmailAddress"/>
+            android:inputType="textEmailAddress"
+            android:layout_margin="10dp"
+            android:textAlignment="center"/>
     </LinearLayout>
 
     <LinearLayout
+        android:layout_below="@id/Email"
+        android:id="@+id/Password1"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/register_password" />
+            android:text="@string/register_password"  android:layout_gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            />
 
         <EditText
             android:id="@+id/registerPassword"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword" />
+            android:inputType="textPassword"
+            android:layout_margin="10dp"
+            android:textAlignment="center"/>
     </LinearLayout>
 
     <LinearLayout
+        android:layout_below="@id/Password1"
+        android:id="@+id/Password2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/confirm_password" />
+            android:text="@string/confirm_password"
+            android:layout_gravity="center"
+            android:textSize="20sp"
+            android:textStyle="bold"/>
 
         <EditText
             android:id="@+id/registerPassowrdConfirm"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:inputType="textPassword"/>
+            android:inputType="textPassword"
+            android:layout_margin="10dp"
+            android:textAlignment="center"/>
     </LinearLayout>
     <Button
         android:id="@+id/registerButton"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="@string/register_confirm" />
+        android:text="@string/register_confirm"
+        android:textColor="#FFFF"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/button_background"/>
 
 
-</LinearLayout>
+</RelativeLayout>

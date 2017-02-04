@@ -5,18 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
     <TextView
-        android:id="@+id/currentDay"
+        android:id="@+id/allMeetingsLabel"
         android:layout_gravity="center_horizontal"
         android:textStyle="bold"
         android:textSize="15sp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
 
     <co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView
-        android:id="@+id/listOfTodaysTasks"
+        android:id="@+id/listOfMeetings"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:rrvLayoutType="LinearLayout"
         app:rrvSwipeToDelete="true"
-        app:rrvEmptyLayoutId="@layout/empty_list_of_day" />
+        app:rrvEmptyLayoutId="@layout/empty_list_of_meetings" />
 </LinearLayout>

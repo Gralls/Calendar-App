@@ -1,32 +1,42 @@
 package com.springer.patryk.tas_android.models;
 
-/**
- * Created by Patryk on 2016-11-29.
- */
-
 import com.google.gson.annotations.SerializedName;
 
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class Task extends RealmObject {
+/**
+ * Created by Patryk on 2017-01-02.
+ */
 
-    @PrimaryKey
+public class Meeting extends RealmObject {
+
     @SerializedName("_id")
+    @PrimaryKey
     private String id;
+
     @SerializedName("title")
     private String title;
+
     @SerializedName("startDate")
     private String startDate;
+
     @SerializedName("startTime")
     private String startTime;
-    @SerializedName("user")
-    private String user;
+
+    @SerializedName("place")
+    private String place;
+
     @SerializedName("description")
     private String description;
+
+    @SerializedName("user")
+    private String user;
+
     @SerializedName("guests")
     private RealmList<Guest> guests;
+
     @SerializedName("status")
     private String status;
 
@@ -54,22 +64,6 @@ public class Task extends RealmObject {
         this.startDate = startDate;
     }
 
-    public String getUser() {
-        return user;
-    }
-
-    public void setUser(String user) {
-        this.user = user;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
     public String getStartTime() {
         return startTime;
     }
@@ -78,6 +72,29 @@ public class Task extends RealmObject {
         this.startTime = startTime;
     }
 
+    public String getPlace() {
+        return place;
+    }
+
+    public void setPlace(String place) {
+        this.place = place;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getUser() {
+        return user;
+    }
+
+    public void setUser(String user) {
+        this.user = user;
+    }
 
     public RealmList<Guest> getGuests() {
         return guests;

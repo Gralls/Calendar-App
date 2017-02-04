@@ -3,45 +3,34 @@ package com.springer.patryk.tas_android.fragments;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.springer.patryk.tas_android.MyApp;
 import com.springer.patryk.tas_android.R;
-import com.springer.patryk.tas_android.SessionManager;
 import com.springer.patryk.tas_android.adapters.CalendarDayOfMonthAdapter;
 import com.springer.patryk.tas_android.adapters.CalendarGridAdapter;
-import com.springer.patryk.tas_android.models.Task;
+import com.springer.patryk.tas_android.models.UserState;
 
 import net.danlew.android.joda.DateUtils;
 
 import org.joda.time.DateTime;
 
-import java.util.List;
-
 import butterknife.BindView;
 import co.moonmonkeylabs.realmrecyclerview.RealmRecyclerView;
-import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
 
 /**
  * Created by Patryk on 23.11.2016.
  */
 
 public class CalendarFragment extends BaseFragment {
-
-    private Context mContext;
-    private static final String LOG_TAG = CalendarFragment.class.getSimpleName();
-
 
     @BindView(R.id.backArrow)
     ImageView backArrow;
@@ -53,29 +42,32 @@ public class CalendarFragment extends BaseFragment {
     RealmRecyclerView monthView;
     @BindView(R.id.daysTitle)
     GridView dayTitles;
+    @BindView(R.id.refreshLayout)
+    SwipeRefreshLayout refreshLayout;
 
-
-    SessionManager sessionManager;
-
+    private Context mContext;
+    private static final String LOG_TAG = CalendarFragment.class.getSimpleName();
     private DateTime dateNow;
     private CalendarGridAdapter calendarGridAdapter;
     private CalendarDayOfMonthAdapter calendarDayOfMonthAdapter;
+
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mContext = getContext();
-        sessionManager = new SessionManager(mContext);
         dateNow = DateTime.now();
-        userDetails = sessionManager.getUserDetails();
-        updateTasks(userDetails.get("id"));
-        final RealmResults<Task> realmResults = realm.where(Task.class).findAll();
-        realmResults.addChangeListener(new RealmChangeListener<RealmResults<Task>>() {
+
+        syncWithServer(userDetails.get("id"));
+
+        final RealmResults<UserState> realmResults = realm.where(UserState.class).findAll();
+        realmResults.addChangeListener(new RealmChangeListener<RealmResults<UserState>>() {
             @Override
-            public void onChange(RealmResults<Task> element) {
+            public void onChange(RealmResults<UserState> element) {
                 calendarGridAdapter.notifyDataSetChanged();
             }
         });
-        calendarGridAdapter = new CalendarGridAdapter(getActivity(), dateNow, realmResults, true, true);
+
+        calendarGridAdapter = new CalendarGridAdapter(mContext, dateNow, realmResults, true, true);
         calendarDayOfMonthAdapter = new CalendarDayOfMonthAdapter(mContext, getResources().getStringArray(R.array.day_names));
     }
 
@@ -85,7 +77,13 @@ public class CalendarFragment extends BaseFragment {
         super.onViewCreated(view, savedInstanceState);
         dayTitles.setAdapter(calendarDayOfMonthAdapter);
         monthView.setAdapter(calendarGridAdapter);
-
+        refreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                syncWithServer(userDetails.get("id"));
+                refreshLayout.setRefreshing(false);
+            }
+        });
         backArrow.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,6 +104,7 @@ public class CalendarFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        getFragmentManager().popBackStack(null, FragmentManager.POP_BACK_STACK_INCLUSIVE);
         mContext.getSharedPreferences("DayDetails", Context.MODE_PRIVATE).edit().clear().apply();
         return inflater.inflate(R.layout.calendar_fragment, container, false);
     }
@@ -131,27 +130,5 @@ public class CalendarFragment extends BaseFragment {
         dateNow = dateNow.plusMonths(1);
         updateDate();
     }
-
-    public void updateUserTasks() {
-
-        Call<List<Task>> call = MyApp.getApiService().getTasks(userDetails.get("id"));
-
-        call.enqueue(new Callback<List<Task>>() {
-            @Override
-            public void onResponse(Call<List<Task>> call, final Response<List<Task>> response) {
-                realm.executeTransaction(new Realm.Transaction() {
-                    @Override
-                    public void execute(Realm realm) {
-                        realm.insertOrUpdate(response.body());
-                    }
-                });
-            }
-            @Override
-            public void onFailure(Call<List<Task>> call, Throwable t) {
-                Toast.makeText(mContext, "Check internet connection", Toast.LENGTH_SHORT).show();
-            }
-        });
-    }
-
 
 }

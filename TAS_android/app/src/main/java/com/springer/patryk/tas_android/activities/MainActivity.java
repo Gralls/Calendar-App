@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -14,18 +15,20 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.SessionManager;
+import com.springer.patryk.tas_android.fragments.AllMeetingsFragment;
+import com.springer.patryk.tas_android.fragments.AllTasksFragment;
 import com.springer.patryk.tas_android.fragments.CalendarFragment;
+import com.springer.patryk.tas_android.fragments.CreateMeetingFragment;
 import com.springer.patryk.tas_android.fragments.CreateTaskFragment;
 
 import butterknife.BindArray;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MainActivity extends AppCompatActivity  {
+public class MainActivity extends AppCompatActivity {
 
 
     @BindView(R.id.mainFab)
@@ -49,9 +52,9 @@ public class MainActivity extends AppCompatActivity  {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
-        mContext=this;
+        mContext = this;
         sessionManager = new SessionManager(mContext);
-        mDrawerList.setAdapter(new ArrayAdapter<String>(this,android.R.layout.simple_list_item_1,mDrawerItems));
+        mDrawerList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, mDrawerItems));
         mDrawerList.setOnItemClickListener(new DrawerListOnItemClickListener());
         mainFab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -59,14 +62,13 @@ public class MainActivity extends AppCompatActivity  {
                 if (taskFabLayout.getVisibility() == View.INVISIBLE) {
                     taskFabLayout.setVisibility(View.VISIBLE);
                     meetingFabLayout.setVisibility(View.VISIBLE);
-                    mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_in));
+                    mainFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fab_rotate_in));
                     taskFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
                     meetingFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_in));
-                }
-                else{
+                } else {
                     taskFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
                     meetingFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
-                    mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_out));
+                    mainFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fab_rotate_out));
                     taskFabLayout.setVisibility(View.INVISIBLE);
                     meetingFabLayout.setVisibility(View.INVISIBLE);
                 }
@@ -76,11 +78,24 @@ public class MainActivity extends AppCompatActivity  {
         taskFabLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                getSupportFragmentManager()
-                        .beginTransaction()
-                        .replace(R.id.mainContent,new CreateTaskFragment(),null)
-                        .addToBackStack(null)
-                        .commit();
+                if (taskFabLayout.getVisibility() == View.VISIBLE) {
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.mainContent, new CreateTaskFragment(), null)
+                            .addToBackStack(null)
+                            .commit();
+                }
+            }
+        });
+        meetingFabLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (meetingFabLayout.getVisibility() == View.VISIBLE)
+                    getSupportFragmentManager()
+                            .beginTransaction()
+                            .replace(R.id.mainContent, new CreateMeetingFragment(), null)
+                            .addToBackStack(null)
+                            .commit();
             }
         });
         getSupportFragmentManager().beginTransaction().add(R.id.mainContent, new CalendarFragment()).commit();
@@ -89,7 +104,7 @@ public class MainActivity extends AppCompatActivity  {
 
     @Override
     public void onBackPressed() {
-        if(getSupportFragmentManager().getBackStackEntryCount()==0) {
+        if (getSupportFragmentManager().getBackStackEntryCount() == 0) {
             new AlertDialog.Builder(this)
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setTitle("Logout")
@@ -105,8 +120,7 @@ public class MainActivity extends AppCompatActivity  {
                     })
                     .setNegativeButton("Cancel", null)
                     .show();
-        }
-        else
+        } else
             super.onBackPressed();
     }
 
@@ -114,25 +128,33 @@ public class MainActivity extends AppCompatActivity  {
         @Override
         public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
             selectItem(position);
+            mNavigationDrawer.closeDrawer(GravityCompat.START);
         }
 
         public void selectItem(int itemPosition) {
             switch (itemPosition) {
                 case 0:
-                    Toast.makeText(mContext, "Wybrano Tasks", Toast.LENGTH_SHORT).show();
+                    getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, new CalendarFragment()).addToBackStack(null).commit();
+                    break;
+                case 1:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, new AllTasksFragment()).addToBackStack(null).commit();
+                    break;
+                case 2:
+                    getSupportFragmentManager().beginTransaction().replace(R.id.mainContent, new AllMeetingsFragment()).addToBackStack(null).commit();
+                    break;
             }
         }
     }
 
-    public void hideFabs(){
+    public void hideFabs() {
         if (taskFabLayout.getVisibility() == View.VISIBLE) {
             taskFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
             meetingFabLayout.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.tasks_move_out));
-            mainFab.startAnimation(AnimationUtils.loadAnimation(mContext,R.anim.fab_rotate_out));
+            mainFab.startAnimation(AnimationUtils.loadAnimation(mContext, R.anim.fab_rotate_out));
             taskFabLayout.setVisibility(View.INVISIBLE);
             meetingFabLayout.setVisibility(View.INVISIBLE);
         }
-            mainFab.setVisibility(View.INVISIBLE);
+        mainFab.setVisibility(View.INVISIBLE);
     }
 
     public void showMainFab() {

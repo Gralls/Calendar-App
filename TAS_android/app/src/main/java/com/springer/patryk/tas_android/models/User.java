@@ -6,15 +6,19 @@ import com.google.gson.annotations.SerializedName;
 import java.util.HashMap;
 import java.util.Map;
 
-public class User {
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
+
+public class User extends RealmObject {
     @SerializedName("_id")
     @Expose
+    @PrimaryKey
     private String id;
     private String password;
     private String email;
     private String login;
     private String name;
-    private Map<String, Object> additionalProperties = new HashMap<String, Object>();
+
 
 
     public String getId() {
@@ -57,13 +61,6 @@ public class User {
         this.name = name;
     }
 
-    public Map<String, Object> getAdditionalProperties() {
-        return this.additionalProperties;
-    }
-
-    public void setAdditionalProperty(String name, Object value) {
-        this.additionalProperties.put(name, value);
-    }
 
     @Override
     public String toString() {
@@ -73,7 +70,6 @@ public class User {
                 ", email='" + email + '\'' +
                 ", login='" + login + '\'' +
                 ", name='" + name + '\'' +
-                ", additionalProperties=" + additionalProperties +
                 '}';
     }
 }

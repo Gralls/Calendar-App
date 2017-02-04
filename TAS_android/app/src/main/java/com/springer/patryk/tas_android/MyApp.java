@@ -2,11 +2,16 @@ package com.springer.patryk.tas_android;
 
 import android.app.Application;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.springer.patryk.tas_android.adapters.GuestAdapter;
 import com.springer.patryk.tas_android.api.ApiEndpoint;
+import com.springer.patryk.tas_android.models.Guest;
 
 import net.danlew.android.joda.JodaTimeAndroid;
 
 import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
@@ -18,13 +23,14 @@ public class MyApp extends Application {
 
     private static ApiEndpoint retrofit;
 
-    public static final String BASE_URL = "http://10.0.2.2:8080/api/";
-    public static final String BASE_URL_DEVICE="http://192.168.0.10:8080/api/";
+    public static final String BASE_URL = "https://ira-project.herokuapp.com/api/";
+    public static final String BASE_URL_DEVICE="http://192.168.43.52:8080/api/";
 
     @Override
     public void onCreate() {
         super.onCreate();
         JodaTimeAndroid.init(this);
+
         retrofit = new Retrofit.Builder()
                 .baseUrl(BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
@@ -32,7 +38,12 @@ public class MyApp extends Application {
                 .create(ApiEndpoint.class);
 
         Realm.init(this);
-
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                .name("tas.realm")
+                .schemaVersion(1)
+                .deleteRealmIfMigrationNeeded() // todo remove for production
+                .build();
+        Realm.setDefaultConfiguration(config);
     }
 
     public static ApiEndpoint getApiService() {

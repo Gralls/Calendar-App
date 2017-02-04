@@ -11,10 +11,13 @@ import android.widget.TextView;
 
 import com.springer.patryk.tas_android.R;
 import com.springer.patryk.tas_android.fragments.DayDetailsFragment;
+import com.springer.patryk.tas_android.models.Meeting;
 import com.springer.patryk.tas_android.models.Task;
+import com.springer.patryk.tas_android.models.UserState;
 
 import org.joda.time.DateTime;
 import org.joda.time.LocalDate;
+import org.joda.time.chrono.StrictChronology;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,14 +30,14 @@ import io.realm.RealmViewHolder;
  * Created by Patryk on 25.11.2016.
  */
 
-public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<Task, CalendarGridAdapter.ViewHolder> {
+public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<UserState, CalendarGridAdapter.ViewHolder> {
 
 
     private DateTime currentDay;
     private List<DateTime> daysOfMonth;
     private FragmentManager manager;
 
-    public CalendarGridAdapter(Context context, DateTime currentMonth, RealmResults<Task> realmResults, boolean automaticUpdate, boolean animateIdType) {
+    public CalendarGridAdapter(Context context, DateTime currentMonth, RealmResults<UserState> realmResults, boolean automaticUpdate, boolean animateIdType) {
         super(context, realmResults, automaticUpdate, animateIdType);
         this.currentDay = currentMonth;
         manager = ((AppCompatActivity) context).getSupportFragmentManager();
@@ -76,6 +79,7 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<Task, Cal
     @Override
     public ViewHolder onCreateRealmViewHolder(ViewGroup viewGroup, int i) {
         View itemView = inflater.inflate(R.layout.day_item, viewGroup, false);
+
         return new ViewHolder(itemView);
     }
 
@@ -89,14 +93,18 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<Task, Cal
             holder.dayNumber.setText(String.valueOf(date.getDayOfMonth()));
             holder.day.setVisibility(View.VISIBLE);
             int taskAtCurrentDay = tasksCountOnPosition(date);
+            int meetingAtCurrentDay = meetingsCountOnPosition(date);
             if (taskAtCurrentDay > 0) {
                 holder.dayTask.setVisibility(View.VISIBLE);
                 holder.dayTask.setText(String.valueOf(taskAtCurrentDay));
-
-            } else {
+            } else
                 holder.dayTask.setVisibility(View.INVISIBLE);
+            if (meetingAtCurrentDay > 0) {
+                holder.dayMeeting.setVisibility(View.VISIBLE);
+                holder.dayMeeting.setText(String.valueOf(meetingAtCurrentDay));
+            } else
                 holder.dayMeeting.setVisibility(View.INVISIBLE);
-            }
+
             if (date.toLocalDate().equals(currentDay.toLocalDate())) {
                 holder.day.setBackgroundResource(R.drawable.today_background);
             } else {
@@ -107,13 +115,30 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<Task, Cal
 
     public int tasksCountOnPosition(DateTime currentDate) {
         int taskCounter = 0;
-        for (Task task : realmResults) {
-            LocalDate localDate = LocalDate.parse(task.getStartDate());
-            if (currentDate.toLocalDate().equals(localDate)) {
-                taskCounter++;
+        if (realmResults.size() > 0) {
+            UserState userState = realmResults.first();
+            for (Task task : userState.getTask()) {
+                LocalDate localDate = LocalDate.parse(task.getStartDate());
+                if (currentDate.toLocalDate().equals(localDate)) {
+                    taskCounter++;
+                }
             }
         }
         return taskCounter;
+    }
+
+    public int meetingsCountOnPosition(DateTime currentDate) {
+        int meetingCounter = 0;
+        if (realmResults.size() > 0) {
+            UserState userState = realmResults.first();
+            for (Meeting meeting : userState.getMeeting()) {
+                LocalDate localDate = LocalDate.parse(meeting.getStartDate());
+                if (currentDate.toLocalDate().equals(localDate)) {
+                    meetingCounter++;
+                }
+            }
+        }
+        return meetingCounter;
     }
 
     @Override
@@ -156,10 +181,5 @@ public class CalendarGridAdapter extends RealmBasedRecyclerViewAdapter<Task, Cal
         }
         return month;
     }
-
-    public void setTasks(List<Task> tasks) {
-        notifyDataSetChanged();
-    }
-
 
 }
