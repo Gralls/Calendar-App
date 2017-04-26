@@ -1,3 +1,7 @@
 # Calendar-App
-Calendar App which allow to create tasks and meetings and share them with other users.
-I know there is still a lot of "bad code" which can be make a lot better, but at this moment I dont have time for it.
+Application made for class purpose which allow user to plan a task or meetings in cooperate with other users. Someday I'll do hard refactore here.
+
+Technology used:
+ButterKnife
+Realm
+Retrofit2
